@@ -1,10 +1,10 @@
 class Menu extends Phaser.Scene {
-  
+
     constructor() {
         super("menuScene");
     }
-
-    preload() {
+ 
+    preload() {            
         
         // Menu music
         this.load.audio('sfx_music', './assets/Space Music.mp3'); // Music:
@@ -32,7 +32,18 @@ class Menu extends Phaser.Scene {
      this.bg_1.setScrollFactor(0);
 
      // start button
-     this.startButton = this.add.sprite(320, 300, 'button1');
+     this.startButton = this.add.sprite(320, 300, 'button1')
+      .setInteractive()
+      .on('pointerover', () => this.enterButtonHoverState() )
+      .on('pointerout', () => this.enterButtonRestState() )
+      .on('pointerdown', () => this.enterButtonActiveState() )
+      .on('pointerup', () => {
+        this.scene.start("playScene");
+        this.sound.play('sfx_select');
+        music.stop();
+        this.enterButtonHoverState();
+    });
+   
 
       // play music
       music = this.sound.add('sfx_music');
@@ -58,17 +69,7 @@ class Menu extends Phaser.Scene {
         },
         fixedWidth: 0
     }
-    /*let instructConfig = {
-      fontFamily: 'Helvetica',
-      fontSize: '20px',
-      color: '#00ff00',
-      align: 'right',
-      padding: {
-          top: 5,
-          bottom: 5,
-      },
-      fixedWidth: 0
-  } */
+
     let centerX = game.config.width/2;
     let centerY = game.config.height/2;
     let textSpacer = 64;
@@ -81,23 +82,24 @@ class Menu extends Phaser.Scene {
     
     } // end of create function
 
+    // hover state for button
+    enterButtonHoverState() {
+      this.startButton = this.add.sprite(320, 300, 'button2');
+    }
+    enterButtonRestState() {
+      this.add.sprite(320, 300, 'button1');
+    }
+
     update() {
 
     // scrolls the background
-      this.bg_1.tilePositionX += 0.3;
+      this.bg_1.tilePositionX += 0.2;
 
-      if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-        // starts game
-        game.settings = {
-          //BlockSpeed: 4,
-          gameTimer: 60000    
-        }
-        this.sound.play('sfx_select');
-        this.startButton = this.add.sprite(320, 300, 'button2');
-        music.stop();
-        this.scene.start("playScene");    
-      }
-     
+      /*game.settings = {
+        //BlockSpeed: 4,
+        gameTimer: 60000    
+      }*/  
+
     } // update function ends
              
-} // end of Menu class
+} // end of Menu class 

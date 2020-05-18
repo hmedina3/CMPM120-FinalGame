@@ -36,7 +36,7 @@ class Menu extends Phaser.Scene {
       .setInteractive()
       .on('pointerover', () => this.enterButtonHoverState() )
       .on('pointerout', () => this.enterButtonRestState() )
-      .on('pointerdown', () => this.enterButtonActiveState() )
+    //  .on('pointerdown', () => this.enterButtonActiveState() )
       .on('pointerup', () => {
         this.scene.start("playScene");
         this.sound.play('sfx_select');

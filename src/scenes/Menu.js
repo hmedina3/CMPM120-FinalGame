@@ -47,7 +47,7 @@ class Menu extends Phaser.Scene {
 
       // play music
       music = this.sound.add('sfx_music');
-      
+
       let musicConfig = {
         mute: false,
         volume: 1,
@@ -76,7 +76,7 @@ class Menu extends Phaser.Scene {
     let centerY = game.config.height/2;
     let textSpacer = 64;
 
-    this.add.text(centerX, centerY- textSpacer, "Project Zeke", menuConfig).setOrigin(0.5);
+    this.add.text(centerX, centerY- textSpacer, "Project Ezekiel", menuConfig).setOrigin(0.5);
     //this.add.text(centerX, centerY + textSpacer + 50, '«press space»', instructConfig).setOrigin(0.5);
 
     // define keys

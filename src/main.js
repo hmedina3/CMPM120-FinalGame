@@ -62,7 +62,7 @@ let deathConfig = {
 }
 
   // reserve keyboard vars
-let keyR, keySPACE, keyLEFT, keyRIGHT;
+let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN;
 
 let game = new Phaser.Game(config); 
 
@@ -70,6 +70,7 @@ let game = new Phaser.Game(config);
 game.settings = {
   // 30 second timer
   gameTimer: 30000,
+  playerSpeed: 200,
   EnemySpeed: 5,
   gameScore: 0
 }

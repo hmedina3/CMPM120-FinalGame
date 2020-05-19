@@ -6,10 +6,13 @@ class Play extends Phaser.Scene {
 
     preload() {
         //background music
-        this.load.audio('sfx_music', './assets/OrbitalColossus.mp3'); //https://opengameart.org/content/space-boss-battle-theme
+        this.load.audio('sfx_music_2', './assets/OrbitalColossus.mp3'); //https://opengameart.org/content/space-boss-battle-theme
         
         // SR-71 - main character
         this.load.image('SR-71','./assets/topdownfighter.png'); //https://opengameart.org/content/one-more-lpc-alternate-character
+
+        //enemy
+        this.load.image('enemy','./assets/skull_in_a_ufo_spacecraft.png'); //https://opengameart.org/content/skull-in-a-ufo-spacecraft
 
         //load sound effect
         //this.load.audio('sfx_power', './assets/powerup.wav'); //https://freesound.org/people/evan.schad/sounds/470768/
@@ -20,16 +23,13 @@ class Play extends Phaser.Scene {
         this.load.image('bullets','./assets/spr_bullet_strip.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
         this.load.image('lasers','./assets/spr_bullet_strip02.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
 
-        //enemy
-        this.load.image('enemy','./assets/skull_in_a_ufo_spacecraft.png'); //https://opengameart.org/content/skull-in-a-ufo-spacecraft
-        
         //icons for power-ups
 
         //background picture
         this.load.image('background','./assets/bg_space_seamless.png'); //https://opengameart.org/content/space-background-7 
         
         //spritesheets
-        //this.load.spritesheet('coin','./assets/spin_coin_big_upscale_strip6.png',{frameWidth: 18, frameheight: 20, startFrame: 0, endFrame: 20});
+        this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 18, frameheight: 20, startFrame: 0, endFrame: 20});
         
     }
 
@@ -38,7 +38,7 @@ class Play extends Phaser.Scene {
         this.background = this.add.tileSprite(0,0,640,480,'background').setOrigin(0,0);
 
         // background music 
-        music = this.sound.add('sfx_music');
+        music = this.sound.add('sfx_music_2');
         let musicConfig = {
             mute: false,
             volume: 1,
@@ -50,34 +50,68 @@ class Play extends Phaser.Scene {
           }
         music.play(musicConfig);
 
-        //(x,y,width,height,key)
-        // laser1 = game.add.tileSprite(0,0,200,200,'lasers');
-        // laser2 = game.add.tileSprite(200,0,400,200,'lasers');
+          // basic attack anims
+        this.anims.create({
+            key: 'base',
+            frames: this.anims.generateFrameNumbers('basicAttack',{start:0, end: 2, first: 0}),
+            framerate: 30,
+           repeat: -1,
+        });
 
-        // Creating main character and adding to location x y
-        this.player = new SR71(this, -50,10,'SR-71').setOrigin(0,0);
-        this.physics.add.existing(this.player); //adding physics to SR-715
-        // setting collision box size
-        this.player.body.setSize(1000,450,0,0); 
-
-        //enemies
+        // enemies
         this.enemy1 = new Enemy(this, 500, -200,'enemy', 0, 10).setScale(.05,.05).setOrigin(0,0);
         this.physics.add.existing(this.enemy1);
         this.enemy1.body.setSize(1500,1050,0,0);// (x,y,[center])
 
         this.shooting = false;
         
+        // Creating main character and adding to location x y
+        this.player = new SR71(this, 100,300,'SR-71').setScale(.10, .10).setOrigin(0,0);
+        // adding physics to SR-71
+        this.physics.add.existing(this.player);
+        // sets physics body
+        this.player.body.setSize(1000,500,0,0);
+        // spacebar for shooting
+        this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); 
+        // bounded to screen
+        this.player.setCollideWorldBounds(true);
+
+        
         // define keyboard keys for movement
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
-        
-      
+        keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        //keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
+
+        // create group to hold all our projectiles
+        this.projectiles = this.add.group();
+
     }   // end of create function
    
     update() {
+        // moves background
+        this.background.tilePositionX += 0.2;
 
+        // spacebar test
+        if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
+            console.log("Firing for effect!");
+            this.basicAttack();
+        }
+        // update all attacks
+        for(let i = 0; i <this.projectiles.getChildren().length; i++){
+            var attack = this.projectiles.getChildren()[i];
+            attack.update();
+        }
+        // collision detection for attacks
+        for(let k = 0; k < this.projectiles.getChildren().length; k++){
+            this.one = this.projectiles.getChildren()[k];
+            if(this.physics.overlap(this.one,this.enemy1) == true){
+                this.enemy1.destroy();
+            }
+        }
+       
         //generate random number
         let random = Math.random();
 
@@ -120,11 +154,10 @@ class Play extends Phaser.Scene {
                 game.settings.gameTimer = 15000;
                 music.stop();
                 //this.scene.restart(this.p1Score);
-                //game.settings.gameTimer = 15000;
-                //this.bgm.destroy();
                 this.scene.start('playScene');
             }
             if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+                music.stop();
                 this.scene.start('menuScene');
             }
         
@@ -148,11 +181,19 @@ class Play extends Phaser.Scene {
             }
             if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
                 this.scene.start('menuScene');
+                music.stop();
             }
         
         }
-
+    
         this.enemy1.update();
+        this.player.update();
 
     } // end of update function. 
+
+    basicAttack(){
+      var attack = new BasicAttack(this);
+    }
+    
+   
 }

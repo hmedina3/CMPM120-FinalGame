@@ -14,7 +14,7 @@ let config = {
     physics: {
       default: 'arcade',
       arcade: {
-        debug: false //debug put boxes over your objects w/ physics and velocity
+        debug: true //debug put boxes over your objects w/ physics and velocity
       }
     }
 }
@@ -70,7 +70,8 @@ let game = new Phaser.Game(config);
 game.settings = {
   // 30 second timer
   gameTimer: 30000,
-  shoe: false,
+  EnemySpeed: 5,
+  gameScore: 0
 }
 // global music variable
 let music;

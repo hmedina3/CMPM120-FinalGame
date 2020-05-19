@@ -47,15 +47,17 @@ class Menu extends Phaser.Scene {
 
       // play music
       music = this.sound.add('sfx_music');
+      
       let musicConfig = {
-          mute: false,
-          volume: 1,
-          rate: 1,
-          detune: 0,
-          seek: 0,
-          loop: true,
-          delay: 0
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: true,
+        delay: 0
       }
+     
       music.play(musicConfig);
     
       let menuConfig = {

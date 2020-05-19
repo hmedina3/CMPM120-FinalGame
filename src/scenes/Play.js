@@ -21,7 +21,7 @@ class Play extends Phaser.Scene {
         this.load.image('lasers','./assets/spr_bullet_strip02.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
         
         //icons for power-ups
-        
+
         //background picture
         this.load.image('background','./assets/bg_space_seamless.png'); //https://opengameart.org/content/space-background-7 
         
@@ -32,17 +32,33 @@ class Play extends Phaser.Scene {
 
     create()  {
 
+        // background music 
+        music = this.sound.add('sfx_music');
+        let musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+          }
+        music.play(musicConfig);
+
         //(x,y,width,height,key)
        // laser1 = game.add.tileSprite(0,0,200,200,'lasers');
         // laser2 = game.add.tileSprite(200,0,400,200,'lasers');
 
-        // Creating main character and adding to location
-        this.player = new SR71(this, 0,300,'SR-71').setScale(1.5,1.5).setOrigin(0,0);
-        this.physics.add.existing(this.player); //adding physics to SR-71
-        this.player.body.setSize(30,32,0,0); //setting collision box size
-        
-        
-      
+        // Creating main character and adding to location x y
+        this.player = new SR71(this, -50,10,'SR-71').setOrigin(0,0);
+        this.physics.add.existing(this.player); //adding physics to SR-715
+
+       // this.player.body.setSize(30,32,0,0); //setting collision box size
+
+        // define keyboard keys for movement
+        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+
     }   // end of create function
    
     update() {
@@ -50,7 +66,7 @@ class Play extends Phaser.Scene {
         // move to death scene if health bar is 0
         if(this.timer <= 0 || this.player.y > game.config.height){
             this.gameOver = true;
-            this.bgm.stop();
+            music.stop();
             this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
             // No highscore. Prehaps a time completed instead?
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'Current Highscore: ' + localStorage.getItem("highscore"),highScoreConfig).setOrigin(0.5);
@@ -60,7 +76,7 @@ class Play extends Phaser.Scene {
             if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
                 this.scene.restart(this.p1Score);
                 game.settings.gameTimer = 15000;
-                this.bgm.destroy();
+                music.stop();
                 this.scene.start('playScene');
             }
             if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
@@ -71,7 +87,7 @@ class Play extends Phaser.Scene {
         // when the player beats the boss level
         if(this.timer <= 0 || this.player.y > game.config.height){
             this.gameOver = true;
-            this.bgm.stop();
+            music.stop();
             this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'Current Highscore: ' + localStorage.getItem("highscore"),highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
@@ -80,7 +96,7 @@ class Play extends Phaser.Scene {
             if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
                 this.scene.restart(this.p1Score);
                 game.settings.gameTimer = 15000;
-                this.bgm.destroy();
+                music.stop();
                 this.scene.start('playScene');
             }
             if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){

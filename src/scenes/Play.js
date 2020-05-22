@@ -33,7 +33,8 @@ class Play extends Phaser.Scene {
         
         //health bar
         this.load.image('health','./assets/healthbar.png');
-
+        this.load.image('outline','./assets/healthbaroutline.png');
+        this.load.image('enemyHealth','./assets/enemyhealthbar.png');
     }
 
     create()  {
@@ -60,7 +61,7 @@ class Play extends Phaser.Scene {
             framerate: 30,
            repeat: -1,
         });
-
+        
         // enemies
         this.enemy1 = new Enemy(this, 500, -200,'enemy', 0, 10).setScale(.05,.05).setOrigin(0,0);
         this.physics.add.existing(this.enemy1);
@@ -92,13 +93,15 @@ class Play extends Phaser.Scene {
         this.projectiles = this.add.group();
 
         //player's health bar
-        this.health = new HealthBar(this);
+        this.outline = this.add.image(0,58,'outline').setScale(0.3,0.25);
+        this.health = new HealthBar(this,0,50,1.35,0.6);
         game.settings.gameHealth = 100;
         this.health.setPercent(game.settings.gameHealth);
 
     }   // end of create function
    
     update() {
+        
         // moves background
         this.background.tilePositionX += 0.2;
 
@@ -112,11 +115,19 @@ class Play extends Phaser.Scene {
             var attack = this.projectiles.getChildren()[i];
             attack.update();
         }
+
+        
         // collision detection for attacks to enemy
         for(let k = 0; k < this.projectiles.getChildren().length; k++){
             this.one = this.projectiles.getChildren()[k];
             if(this.physics.overlap(this.one,this.enemy1) == true){
-                this.enemy1.destroy();
+                this.enemy1.health -= 10;
+                this.enemy1.setPercent(this.enemy1.health);
+                if(this.enemy1.health == 0){
+                    this.enemy1.destroy();
+                    this.enemy1.bar.destroy();
+                    this.enemy1.isDead = true;
+                }
             }
         }
        
@@ -124,7 +135,7 @@ class Play extends Phaser.Scene {
         let random = Math.random();
 
         //enemy shoots attacks at random 
-        if(random <= .03 && this.shooting == false){ // for every 3% chance, the enemy will shoot a laser
+        if(random <= .03 && this.shooting == false && this.enemy1.isDead == false){ // for every 3% chance, the enemy will shoot a laser
             this.shooting = true;
             this.laser = this.add.tileSprite(this.enemy1.x,this.enemy1.y,90,67,'lasers');
             this.physics.add.existing(this.laser);
@@ -133,7 +144,7 @@ class Play extends Phaser.Scene {
         }
 
         //moving laser if enemy shot one
-        if(this.shooting == true){
+        if(this.shooting == true && this.enemy1.isDead == false){
             this.laser.x -= 6;
             if(this.laser.x <= 0 && this.shooting == true){
                 this.laser.x = -100;
@@ -194,7 +205,7 @@ class Play extends Phaser.Scene {
             }
         
         }
-    
+  
         this.enemy1.update();
         this.player.update();
 

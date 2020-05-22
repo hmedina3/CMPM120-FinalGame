@@ -26,11 +26,14 @@ class Play extends Phaser.Scene {
         //icons for power-ups
 
         //background picture
-        this.load.image('background','./assets/bg_space_seamless.png'); //https://opengameart.org/content/space-background-7 
-        
+        this.load.image('background','./assets/Space-Background-4.jpg');
+
         //spritesheets
         this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 18, frameheight: 20, startFrame: 0, endFrame: 20});
         
+        //health bar
+        this.load.image('health','./assets/healthbar.png');
+
     }
 
     create()  {
@@ -88,6 +91,11 @@ class Play extends Phaser.Scene {
         // create group to hold all our projectiles
         this.projectiles = this.add.group();
 
+        //player's health bar
+        this.health = new HealthBar(this);
+        game.settings.gameHealth = 100;
+        this.health.setPercent(game.settings.gameHealth);
+
     }   // end of create function
    
     update() {
@@ -104,7 +112,7 @@ class Play extends Phaser.Scene {
             var attack = this.projectiles.getChildren()[i];
             attack.update();
         }
-        // collision detection for attacks
+        // collision detection for attacks to enemy
         for(let k = 0; k < this.projectiles.getChildren().length; k++){
             this.one = this.projectiles.getChildren()[k];
             if(this.physics.overlap(this.one,this.enemy1) == true){
@@ -133,34 +141,35 @@ class Play extends Phaser.Scene {
             }
         }
         
-        // move to death scene if health bar is 0
-        if(this.timer <= 0 || this.player.y > game.config.height){
-            this.gameOver = true;
-            music.stop();
-            this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
-        }
+        //checking for collision between enemy attack and player
         if(this.physics.overlap(this.player,this.laser) == true){
-            console.log("yes");
-            //this.gameOver = true;
-            music.stop();
-            this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
-            // No highscore. Prehaps a time completed instead?
-            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Current Highscore: ' + localStorage.getItem("highscore"),highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+            this.laser.destroy();
+            game.settings.gameHealth -= 10;
+            this.health.setPercent(game.settings.gameHealth)
 
-            // check for input during death scene
-            if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
-                this.scene.restart(this.p1Score);
-                game.settings.gameTimer = 15000;
+            // move to death scene if health bar is 0
+            if(game.settings.gameHealth == 0){
+                //this.gameOver = true;
                 music.stop();
-                //this.scene.restart(this.p1Score);
-                this.scene.start('playScene');
+                this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
+                // No highscore. Prehaps a time completed instead?
+                this.add.text(game.config.width/2, game.config.height/4 + 50, 'Current Highscore: ' + localStorage.getItem("highscore"),highScoreConfig).setOrigin(0.5);
+                this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+
+                // check for input during death scene
+                if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+                    this.scene.restart(this.p1Score);
+                    game.settings.gameTimer = 15000;
+                    music.stop();
+                    //this.scene.restart(this.p1Score);
+                    this.scene.start('playScene');
+                }
+                if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+                    music.stop();
+                    this.scene.start('menuScene');
+                }
+            
             }
-            if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
-                music.stop();
-                this.scene.start('menuScene');
-            }
-        
         }
 
         // when the player beats the boss level

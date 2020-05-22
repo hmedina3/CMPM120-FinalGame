@@ -72,7 +72,8 @@ game.settings = {
   gameTimer: 30000,
   playerSpeed: 200,
   EnemySpeed: 5,
-  gameScore: 0
+  gameScore: 0,
+  gameHealth: 100,
 }
 // global music variable
 let music;

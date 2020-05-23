@@ -6,18 +6,21 @@ class Menu extends Phaser.Scene {
  
     preload() {            
         
-        // Menu music
-        this.load.audio('sfx_music', './assets/Space Music.mp3'); // Music:
+        // Menu music -  Music: https://www.bensound.com
+        this.load.audio('sfx_music', './assets/bensound-birthofahero.mp3');
         
         // background picture
         this.load.image('background','./assets/bg_space_seamless.png');
+        // buttons
         this.load.image('button1','./assets/PixelArt_1.png');
         this.load.image('button2','./assets/PixelArt_2.png');
+        this.load.image('options1','./assets/Options_1.png');
+        this.load.image('options2','./assets/Options_2.png');
 
         
-        // Sound select
-        this.load.audio('sfx_select', './assets/42106__marcuslee__laser-wrath-4.wav');
-
+        // Sound select - Sound effect obtained from https://www.zapsplat.com
+        this.load.audio('sfx_select', './assets/zapsplat_science_fiction_space_fighter_fly_past_fast_002_32236.mp3');
+        this.load.audio('sfx_select_2', './assets/42106__marcuslee__laser-wrath-4.wav');
     }
     
     create() {
@@ -43,6 +46,20 @@ class Menu extends Phaser.Scene {
         music.stop();
         this.enterButtonHoverState();
     });
+
+    // options button
+    this.optionsButton = this.add.sprite(320, 375, 'options1').setScale(0.1,0.1)
+    .setInteractive()
+    .on('pointerover', () => this.enterButtonHoverState2() )
+    .on('pointerout', () => this.enterButtonRestState2() )
+  //  .on('pointerdown', () => this.enterButtonActiveState() )
+    .on('pointerup', () => {
+      this.scene.start("optionsScene");
+      this.sound.play('sfx_select_2');
+     // music.stop();
+      this.enterButtonHoverState2();
+  });
+ 
    
 
       // play music
@@ -50,15 +67,16 @@ class Menu extends Phaser.Scene {
 
       let musicConfig = {
         mute: false,
-        volume: 1,
+        volume: 3,
         rate: 1,
         detune: 0,
         seek: 0,
         loop: true,
         delay: 0
       }
-     
+
       music.play(musicConfig);
+      
     
       let menuConfig = {
         fontFamily: 'Helvetica',
@@ -84,12 +102,19 @@ class Menu extends Phaser.Scene {
     
     } // end of create function
 
-    // hover state for button
+    // hover states for start button
     enterButtonHoverState() {
       this.startButton = this.add.sprite(320, 300, 'button2');
     }
     enterButtonRestState() {
       this.add.sprite(320, 300, 'button1');
+    }
+    // hover states for options button
+    enterButtonHoverState2() {
+      this.optionsButton = this.add.sprite(320, 375, 'options2').setScale(0.1,0.1);
+    }
+    enterButtonRestState2() {
+      this.add.sprite(320, 375, 'options1').setScale(0.1,0.1);
     }
 
     update() {

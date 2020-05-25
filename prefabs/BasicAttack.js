@@ -1,7 +1,7 @@
 class BasicAttack extends Phaser.GameObjects.Sprite{
     constructor(scene){
-        var x = scene.player.x;
-        var y = scene.player.y - 16;
+        var x = scene.player.x + 100;
+        var y = scene.player.y + 50;
         super(scene, x, y, 'basicAttack');
         scene.add.existing(this); //add object to existing scene
         

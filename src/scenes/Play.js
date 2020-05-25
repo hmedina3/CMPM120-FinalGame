@@ -9,10 +9,13 @@ class Play extends Phaser.Scene {
         this.load.audio('sfx_music_2', './assets/OrbitalColossus.mp3'); //https://opengameart.org/content/space-boss-battle-theme
         
         // SR-71 - main character
-        this.load.image('SR-71','./assets/topdownfighter.png'); //https://opengameart.org/content/one-more-lpc-alternate-character
+        this.load.spritesheet('SR-71','./assets/player1.png',{frameWidth: 250, frameheight: 173, startFrame: 0, endFrame: 1}); //https://opengameart.org/content/one-more-lpc-alternate-character
 
         //enemy
-        this.load.image('enemy','./assets/skull_in_a_ufo_spacecraft.png'); //https://opengameart.org/content/skull-in-a-ufo-spacecraft
+        this.load.spritesheet('enemy','./assets/4_fighters_sprites.png',{frameWidth: 98, frameheight: 72, startFrame: 0, endFrame: 1}); //http://freegameassets.blogspot.com/2015/02/space-patrol-sprite-sheet-this-space.html
+        this.load.spritesheet('enemy2','./assets/enemy2.png',{frameWidth: 84, frameheight: 60, startFrame: 0, endFrame: 1});
+        this.load.spritesheet('enemy3','./assets/enemy3.png',{frameWidth: 106, frameheight: 58, startFrame: 0, endFrame: 1});
+        this.load.spritesheet('enemy4','./assets/enemy4.png',{frameWidth: 79, frameheight: 47, startFrame: 0, endFrame: 1});
 
         //load sound effect
         //this.load.audio('sfx_power', './assets/powerup.wav'); //https://freesound.org/people/evan.schad/sounds/470768/
@@ -38,6 +41,10 @@ class Play extends Phaser.Scene {
     }
 
     create()  {
+
+        //player time core
+        this.timer = game.settings.gameScore;
+
         //place background
         this.background = this.add.tileSprite(0,0,640,480,'background').setOrigin(0,0);
 
@@ -61,20 +68,82 @@ class Play extends Phaser.Scene {
             framerate: 30,
            repeat: -1,
         });
-        
-        // enemies
-        this.enemy1 = new Enemy(this, 500, -200,'enemy', 0, 10).setScale(.05,.05).setOrigin(0,0);
-        this.physics.add.existing(this.enemy1);
-        this.enemy1.body.setSize(1500,1050,0,0);// (x,y,[center])
 
-        this.shooting = false;
+        //animation for enemies ship
+        //enemy type 1
+        this.anims.create({
+            key:'enemy1',
+            frames: this.anims.generateFrameNumbers('enemy',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        })
+        //enemy type 2
+        this.anims.create({
+            key:'enemy2',
+            frames: this.anims.generateFrameNumbers('enemy2',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        })
+        //enemy type 3
+        this.anims.create({
+            key:'enemy3',
+            frames: this.anims.generateFrameNumbers('enemy3',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        })
+        //enemy type 4
+        this.anims.create({
+            key:'enemy4',
+            frames: this.anims.generateFrameNumbers('enemy4',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        })
+
+        //animation for player's ship
+        this.anims.create({
+            key:'player',
+            frames: this.anims.generateFrameNumbers('SR-71',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        })
+        
+        // different types of enemies
+        // enemy1
+        this.enemy1 = new Enemy(this, 500, -200,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
+        this.physics.add.existing(this.enemy1);
+        this.enemy1.anims.play('enemy1',true);
+        this.enemy1.body.setSize(98,70,0,0);// (x,y,[center])
+        //enemy2 (blue one)
+        this.enemy2 = new Enemy(this, 450, -100,'enemy2', 0,10).setScale(1,1).setOrigin(0,0);
+        this.physics.add.existing(this.enemy2);
+        this.enemy2.anims.play('enemy2',true);
+        this.enemy2.body.setSize(87,65,0,0);// (x,y,[center])
+        //enemy3 (red one)
+        this.enemy3 = new Enemy(this, 400, -50,'enemy3', 0,15).setScale(1,1).setOrigin(0,0);
+        this.physics.add.existing(this.enemy3);
+        this.enemy3.anims.play('enemy3',true);
+        this.enemy3.body.setSize(87,65,0,0);// (x,y,[center])
+        //enemy4 (small gray one)
+        this.enemy4 = new Enemy(this, 300, -250,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
+        this.physics.add.existing(this.enemy4);
+        this.enemy4.anims.play('enemy4',true);
+        this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
+
+        //putting all types of enemies into a group
+        this.theEnemies = this.physics.add.group();
+        this.theEnemies.add(this.enemy1);
+        this.theEnemies.add(this.enemy2);
+        this.theEnemies.add(this.enemy3);
+        this.theEnemies.add(this.enemy4);
         
         // Creating main character and adding to location x y
-        this.player = new SR71(this, 100,300,'SR-71').setScale(.10, .10).setOrigin(0,0);
+        this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
         // adding physics to SR-71
         this.physics.add.existing(this.player);
         // sets physics body
-        this.player.body.setSize(1000,500,0,0);
+        this.player.body.setSize(250,173,0,0);
+        //player animation
+        this.player.anims.play('player',true);
         // spacebar for shooting
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); 
         // bounded to screen
@@ -98,9 +167,25 @@ class Play extends Phaser.Scene {
         game.settings.gameHealth = 100;
         this.health.setPercent(game.settings.gameHealth);
 
+        this.gameOver = false;
+
     }   // end of create function
    
     update() {
+        
+
+        //tracking time
+        if(this.gameOver == false){
+            this.timer += .01;
+        }else{
+            this.timer == this.timer;
+        }
+
+        //display time
+        this.showTime = this.add.text(400,25,this.timer, scoreConfig);
+
+        let shortestTime = localStorage.getItem("high-score");
+ 
         
         // moves background
         this.background.tilePositionX += 0.2;
@@ -120,82 +205,76 @@ class Play extends Phaser.Scene {
         // collision detection for attacks to enemy
         for(let k = 0; k < this.projectiles.getChildren().length; k++){
             this.one = this.projectiles.getChildren()[k];
-            if(this.physics.overlap(this.one,this.enemy1) == true){
-                this.enemy1.health -= 10;
-                this.enemy1.setPercent(this.enemy1.health);
-                if(this.enemy1.health == 0){
-                    this.enemy1.destroy();
-                    this.enemy1.bar.destroy();
-                    this.enemy1.isDead = true;
+            for(let j = 0; j < this.theEnemies.getChildren().length; j++){
+                this.opponent = this.theEnemies.getChildren()[j];
+                if(this.physics.overlap(this.one,this.opponent) == true){
+                    this.opponent.health -= 10;
+                    this.opponent.setPercent(this.opponent.health);
+                    if(this.opponent.health == 0){
+                        this.opponent.destroy();
+                        this.opponent.bar.destroy();
+                        this.opponent.laser.destroy();
+                        this.opponent.isDead = true;
+                    }
                 }
             }
         }
        
-        //generate random number
-        let random = Math.random();
 
-        //enemy shoots attacks at random 
-        if(random <= .03 && this.shooting == false && this.enemy1.isDead == false){ // for every 3% chance, the enemy will shoot a laser
-            this.shooting = true;
-            this.laser = this.add.tileSprite(this.enemy1.x,this.enemy1.y,90,67,'lasers');
-            this.physics.add.existing(this.laser);
-            this.laser.body.setSize(35,10,true);
-
-        }
-
-        //moving laser if enemy shot one
-        if(this.shooting == true && this.enemy1.isDead == false){
-            this.laser.x -= 6;
-            if(this.laser.x <= 0 && this.shooting == true){
-                this.laser.x = -100;
-                this.shooting = false;
-            }
-        }
         
         //checking for collision between enemy attack and player
-        if(this.physics.overlap(this.player,this.laser) == true){
-            this.laser.destroy();
-            game.settings.gameHealth -= 10;
-            this.health.setPercent(game.settings.gameHealth)
+        for(let k = 0; k < this.theEnemies.getChildren().length; k++){
+            this.one = this.theEnemies.getChildren()[k];
+            if(this.physics.overlap(this.player,this.one.laser) == true){
+                this.one.laser.destroy();
+                game.settings.gameHealth -= 10;
+                this.health.setPercent(game.settings.gameHealth)
 
-            // move to death scene if health bar is 0
-            if(game.settings.gameHealth == 0){
-                //this.gameOver = true;
-                music.stop();
-                this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
-                // No highscore. Prehaps a time completed instead?
-                this.add.text(game.config.width/2, game.config.height/4 + 50, 'Current Highscore: ' + localStorage.getItem("highscore"),highScoreConfig).setOrigin(0.5);
-                this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+                // move to death scene if health bar is 0
+                if(game.settings.gameHealth == 0){
+                    this.gameOver = true;                  
+                    music.stop();
+                    this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
+                    this.add.text(game.config.width/2, game.config.height/4 + 50, 'Survival Time: ' + this.timer ,highScoreConfig).setOrigin(0.5);
+                    this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
 
-                // check for input during death scene
-                if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
-                    this.scene.restart(this.p1Score);
-                    game.settings.gameTimer = 15000;
-                    music.stop();
-                    //this.scene.restart(this.p1Score);
-                    this.scene.start('playScene');
+                    // check for input during death scene
+                    if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+                        this.scene.restart(this.timer);
+                        game.settings.gameScore = 0;
+                        music.stop();
+                        //this.scene.restart(this.p1Score);
+                        this.scene.start('playScene');
+                    }
+                    if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+                        music.stop();
+                        this.scene.start('menuScene');
+                    }
+                
                 }
-                if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
-                    music.stop();
-                    this.scene.start('menuScene');
-                }
-            
             }
         }
 
         // when the player beats the boss level
         if(this.timer <= 0 || this.player.y > game.config.height){
             this.gameOver = true;
+            //tracking shortest time
+            if(shortestTime == null || shortestTime == 0){
+                localStorage.setItem("high-score", 1000);
+                shortestTime = 1000;
+            }else if(this.timer < shortestTime){
+                localStorage.setItem("high-score", this.timer);
+            }
             music.stop();
             this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Current Highscore: ' + localStorage.getItem("highscore"),highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + localStorage.getItem("high-score"),highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
 
             // check for input during end scene
             if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
                 this.scene.restart(this.p1Score);
-                game.settings.gameTimer = 15000;
+                game.settings.gameScore = 0;
                 music.stop();
                 this.scene.start('playScene');
             }
@@ -207,6 +286,9 @@ class Play extends Phaser.Scene {
         }
   
         this.enemy1.update();
+        this.enemy2.update();
+        this.enemy3.update();
+        this.enemy4.update();
         this.player.update();
 
     } // end of update function. 

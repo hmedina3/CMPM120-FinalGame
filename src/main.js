@@ -71,7 +71,7 @@ game.settings = {
   // 30 second timer
   gameTimer: 30000,
   playerSpeed: 200,
-  EnemySpeed: 5,
+  EnemySpeed: 8,
   gameScore: 0,
   gameHealth: 100,
 }

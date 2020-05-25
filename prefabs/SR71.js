@@ -15,22 +15,22 @@ class SR71 extends  Phaser.Physics.Arcade.Sprite  {
     // left/ right movement
     if(keyLEFT.isDown){
       //this.player.setVelocityX(-game.settings.playerSpeed);
-      this.x -= 4;
+      this.x -= 6;
       console.log("left!");
     }else if(keyRIGHT.isDown){
      // this.player.setVelocityX(game.settings.playerSpeed);
-     this.x += 4;
+     this.x += 6;
       console.log("right!");
     }
 
     // Up/ Down movement
     if(keyUP.isDown){
       //this.player.setVelocityY(-game.settings.playerSpeed);
-      this.y -= 4;
+      this.y -= 6;
       console.log("up!");
     }else if(keyDOWN.isDown){
       //this.player.setVelocityY(game.settings.playerSpeed);
-      this.y += 4;
+      this.y += 6;
       console.log("down!");
     }
 

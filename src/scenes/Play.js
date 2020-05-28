@@ -36,6 +36,8 @@ class Play extends Phaser.Scene {
         
         //health bar
         this.load.image('health','./assets/healthbar.png');
+        this.load.image('box','./assets/healthbarbox.png');
+        this.load.image('boxhide','./assets/healthbarhide.png');
         this.load.image('outline','./assets/healthbaroutline.png');
         this.load.image('enemyHealth','./assets/enemyhealthbar.png');
     }
@@ -162,27 +164,31 @@ class Play extends Phaser.Scene {
         this.projectiles = this.add.group();
 
         //player's health bar
-        this.outline = this.add.image(0,58,'outline').setScale(0.3,0.25);
-        this.health = new HealthBar(this,0,50,1.35,0.6);
+        this.box = this.add.image(50,50,'box').setScale(0.5,0.15);
+        this.outline = this.add.image(200,58,'outline').setScale(0.3,0.25);
+        this.health = new HealthBar(this,52,50,2.9,0.6);
+        this.hide = this.add.image(7,50,'boxhide').setScale(0.2,0.25);
+        this.add.text(50, 50, 'HP',{color: 'black'}).setOrigin(0.5);
         game.settings.gameHealth = 100;
         this.health.setPercent(game.settings.gameHealth);
 
         this.gameOver = false;
+        
 
     }   // end of create function
    
     update() {
         
-
+        
         //tracking time
         if(this.gameOver == false){
-            this.timer += .01;
+            this.timer += 0.04;
         }else{
             this.timer == this.timer;
         }
 
         //display time
-        this.showTime = this.add.text(400,25,this.timer, scoreConfig);
+        this.showTime = this.add.text(490,33,'Time: ' + Math.floor(this.timer), scoreConfig);
 
         let shortestTime = localStorage.getItem("high-score");
  
@@ -207,9 +213,14 @@ class Play extends Phaser.Scene {
             this.one = this.projectiles.getChildren()[k];
             for(let j = 0; j < this.theEnemies.getChildren().length; j++){
                 this.opponent = this.theEnemies.getChildren()[j];
+                //if an enemy and a bullet/laser collide
                 if(this.physics.overlap(this.one,this.opponent) == true){
+                    //enemy health goes down
                     this.opponent.health -= 10;
                     this.opponent.setPercent(this.opponent.health);
+                    //bullet/laser gets destroy
+                    this.one.destroy();
+                    //if enemy runs out of health, they die
                     if(this.opponent.health == 0){
                         this.opponent.destroy();
                         this.opponent.bar.destroy();

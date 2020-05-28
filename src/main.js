@@ -23,14 +23,14 @@ let config = {
 let scoreConfig = {
   fontFamily: 'Courier',
   fontSize: '28px',
-  backgroundColor: '#a5c3cf',
-  color: '#4b88b0',
-  align: 'right',
+  backgroundColor: '#C3C3C3',
+  color: 'black',
+  align: 'center',
   padding: {
-      top: 3,
-      bottom: 3,
+      top: 5,
+      bottom: 5,
   },
-  fixedWidth: 100
+  fixedWidth: 150
 }
 
 // highscore display

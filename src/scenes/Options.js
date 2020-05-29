@@ -20,7 +20,7 @@ class Options extends Phaser.Scene {
         this.load.image('rightArrow2','./assets/rightarrow2.png');
         this.load.image('backButton','./assets/backbutton.png');
         this.load.image('backButton2','./assets/backbutton2.png');
-        // audio for buttons
+        // audio buttons
         // sound effect from: https://www.zapsplat.com/?s=blip&post_type=music&sound-effect-category-id= 
         this.load.audio('blip', './assets/sound_ex_machina_Button_Blip.mp3');
         // Sound select
@@ -35,10 +35,9 @@ class Options extends Phaser.Scene {
      // Set its pivot to the top left corner
      this.bg_2.setOrigin(0, 0);
      // fixed it so it won't move when the camera moves.
-    
     this.bg_2.setScrollFactor(0);
 
-    this.add.sprite(310, 50, 'optionsTitle');
+    this.add.sprite(400, 50, 'optionsTitle');
     let textConfig = {
         fontFamily: 'Helvetica',
         fontSize: '40px',
@@ -50,6 +49,7 @@ class Options extends Phaser.Scene {
         },
         fixedWidth: 0
     }
+
     this.count = 3;
     this.add.text(140,117, "Music", textConfig);
     this.volumeText = this.add.text(340,120, "3", textConfig);
@@ -60,9 +60,10 @@ class Options extends Phaser.Scene {
     .on('pointerup', () => {
         if(this.count > 0){
         this.count--;
-       music.volume -= 0.1;
+        music.volume -= 0.3;
+        console.log("left button pressed!");
         }
-        this.sound.play('blip');
+      this.sound.play('blip');
       this.enterButtonHoverState();
   });
   // right arrow functionality
@@ -72,7 +73,8 @@ class Options extends Phaser.Scene {
     .on('pointerup', () => {
         if(this.count < 9){
             this.count++;
-           music.volume += 0.1;
+            music.volume += 0.3;
+            console.log("right button pressed!");
         }
         this.sound.play('blip');
       this.enterButtonHoverState2();
@@ -80,18 +82,20 @@ class Options extends Phaser.Scene {
 
 
   // back button functionality
-  this.backButton = this.add.sprite(80, 450, 'backButton').setScale(0.2,0.2).setInteractive()
+  this.backButton = this.add.sprite(80, 550, 'backButton').setScale(0.2,0.2).setInteractive()
   .on('pointerover', () => this.enterButtonHoverState3() )
   .on('pointerout', () => this.enterButtonRestState3() )
   .on('pointerup', () => {
       this.sound.play('sfx_select_2');
-      music.stop();
-      this.scene.start("menuScene");
+    music.stop();
+    this.scene.start("menuScene")
     this.enterButtonHoverState3();
 });
 
 
 } // end of create function
+
+
 
 // hover states for left button
 enterButtonHoverState() {
@@ -109,12 +113,11 @@ enterButtonHoverState2() {
   }
   // hover states for back button
 enterButtonHoverState3() {
-    this.backButton = this.add.sprite(80, 450, 'backButton2').setScale(0.2,0.2);
+    this.backButton = this.add.sprite(80, 550, 'backButton2').setScale(0.2,0.2);
   }
   enterButtonRestState3() {
-    this.add.sprite(80, 450, 'backButton').setScale(0.2,0.2);
+    this.add.sprite(80, 550, 'backButton').setScale(0.2,0.2);
   }
-
 
     
     update() {
@@ -122,16 +125,20 @@ enterButtonHoverState3() {
         this.bg_2.tilePositionX += 0.2;
         // updates text for volume
         this.updateText();
-       
+
         if(this.count == 0){
             // mutes audio
             music.mute = true;
+
+            //this.sys.game.globals.model = music.mute;
         }
         else
         {
-            music.mute = false;
+          music.mute = false;
+
+           // this.sys.game.globals.model =  music.mute;
         }
-       
+      
     } // update function ends
 
     updateText(){

@@ -35,7 +35,7 @@ class Menu extends Phaser.Scene {
      this.bg_1.setScrollFactor(0);
 
      // start button
-     this.startButton = this.add.sprite(320, 300, 'button1')
+     this.startButton = this.add.sprite(400, 350, 'button1')
       .setInteractive()
       .on('pointerover', () => this.enterButtonHoverState() )
       .on('pointerout', () => this.enterButtonRestState() )
@@ -48,7 +48,7 @@ class Menu extends Phaser.Scene {
     });
 
     // options button
-    this.optionsButton = this.add.sprite(320, 375, 'options1').setScale(0.1,0.1)
+    this.optionsButton = this.add.sprite(400, 430, 'options1').setScale(0.1,0.1)
     .setInteractive()
     .on('pointerover', () => this.enterButtonHoverState2() )
     .on('pointerout', () => this.enterButtonRestState2() )
@@ -59,25 +59,10 @@ class Menu extends Phaser.Scene {
      // music.stop();
       this.enterButtonHoverState2();
   });
- 
-   
-
       // play music
       music = this.sound.add('sfx_music');
-
-      let musicConfig = {
-        mute: false,
-        volume: 3,
-        rate: 1,
-        detune: 0,
-        seek: 0,
-        loop: true,
-        delay: 0
-      }
-
-      music.play(musicConfig);
+      music.play();
       
-    
       let menuConfig = {
         fontFamily: 'Helvetica',
         fontSize: '70px',
@@ -104,17 +89,17 @@ class Menu extends Phaser.Scene {
 
     // hover states for start button
     enterButtonHoverState() {
-      this.startButton = this.add.sprite(320, 300, 'button2');
+      this.startButton = this.add.sprite(400, 350, 'button2');
     }
     enterButtonRestState() {
-      this.add.sprite(320, 300, 'button1');
+      this.add.sprite(400, 350, 'button1');
     }
     // hover states for options button
     enterButtonHoverState2() {
-      this.optionsButton = this.add.sprite(320, 375, 'options2').setScale(0.1,0.1);
+      this.optionsButton = this.add.sprite(400, 430, 'options2').setScale(0.1,0.1);
     }
     enterButtonRestState2() {
-      this.add.sprite(320, 375, 'options1').setScale(0.1,0.1);
+      this.add.sprite(400, 430, 'options1').setScale(0.1,0.1);
     }
 
     update() {

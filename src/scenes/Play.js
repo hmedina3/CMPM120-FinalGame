@@ -48,7 +48,7 @@ class Play extends Phaser.Scene {
         this.timer = game.settings.gameScore;
 
         //place background
-        this.background = this.add.tileSprite(0,0,640,480,'background').setOrigin(0,0);
+        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0.0);
 
         // background music 
         music = this.sound.add('sfx_music_2');

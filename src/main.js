@@ -6,10 +6,12 @@ Game title: ?
 Date completed: pending...
 
 */
+
+
 let config = {
     type: Phaser.AUTO,
-    width: 640,
-    height: 480,
+    width: 800, //640
+    height: 600, //480
     scene: [Menu, Options, Play],
     physics: {
       default: 'arcade',
@@ -76,6 +78,12 @@ game.settings = {
   gameHealth: 100,
 }
 // global music variable
-let music;
-
-
+let music = {
+  mute: false,
+  volume: 0.5,
+  rate: 1,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+}

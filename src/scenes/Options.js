@@ -10,6 +10,8 @@ class Options extends Phaser.Scene {
     }
 
     preload(){
+         // Menu music -  Music: https://www.bensound.com
+         this.load.audio('sfx_music', './assets/bensound-birthofahero.mp3');
         // background picture
         this.load.image('background_2','./assets/bg_space_seamless.png');
         this.load.image('optionsTitle','./assets/OptionsTitle.png');
@@ -28,6 +30,11 @@ class Options extends Phaser.Scene {
     }
 
     create(){
+      /*** Testing code
+      this.musicUp += 0.3;
+      this.musicDown -= 0.3;
+      **/
+    
     // This will make the background move as a parallax scroller.
      this.bg_2 = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background_2');
      // SetScale()
@@ -50,19 +57,28 @@ class Options extends Phaser.Scene {
         fixedWidth: 0
     }
 
-    this.count = 3;
     this.add.text(140,117, "Music", textConfig);
-    this.volumeText = this.add.text(340,120, "3", textConfig);
+    this.volumeText = this.add.text(340,120, globalCount, textConfig);
     // left arrow functionality
     this.leftButton = this.add.sprite(300, 150, 'leftArrow').setScale(0.5,0.5).setInteractive()
     .on('pointerover', () => this.enterButtonHoverState() )
     .on('pointerout', () => this.enterButtonRestState() )
     .on('pointerup', () => {
-        if(this.count > 0){
-        this.count--;
+
+    if(globalCount > 0){
         music.volume -= 0.3;
+        globalVolume = music.volume;
+        globalCount--;
         console.log("left button pressed!");
-        }
+        console.log(globalCount);
+      }
+
+    if(globalCount == 0 ){
+      music.volume = 0;
+      globalVolume = music.volume;
+    }
+
+      this.updateText();
       this.sound.play('blip');
       this.enterButtonHoverState();
   });
@@ -71,11 +87,13 @@ class Options extends Phaser.Scene {
     .on('pointerover', () => this.enterButtonHoverState2() )
     .on('pointerout', () => this.enterButtonRestState2() )
     .on('pointerup', () => {
-        if(this.count < 9){
-            this.count++;
+        if(globalCount < 9){
+            globalCount++;
             music.volume += 0.3;
+            globalVolume = music.volume;
             console.log("right button pressed!");
         }
+        this.updateText();
         this.sound.play('blip');
       this.enterButtonHoverState2();
   });
@@ -86,8 +104,9 @@ class Options extends Phaser.Scene {
   .on('pointerover', () => this.enterButtonHoverState3() )
   .on('pointerout', () => this.enterButtonRestState3() )
   .on('pointerup', () => {
+    counter = 1;
       this.sound.play('sfx_select_2');
-    music.stop();
+   // music.stop(globalVolume);
     this.scene.start("menuScene")
     this.enterButtonHoverState3();
 });
@@ -122,27 +141,15 @@ enterButtonHoverState3() {
     
     update() {
         // scrolls the background
-        this.bg_2.tilePositionX += 0.2;
-        // updates text for volume
-        this.updateText();
+        this.bg_2.tilePositionX += 0.2;  
+        console.log(globalVolume);
+        console.log(globalCount);
 
-        if(this.count == 0){
-            // mutes audio
-            music.mute = true;
-
-            //this.sys.game.globals.model = music.mute;
-        }
-        else
-        {
-          music.mute = false;
-
-           // this.sys.game.globals.model =  music.mute;
-        }
-      
+        
     } // update function ends
 
     updateText(){
-        this.volumeText.setText(this.count);
+        this.volumeText.setText(globalCount);
     }
 
 } // end of options scene 

@@ -33,6 +33,11 @@ class Menu extends Phaser.Scene {
      this.bg_1.setOrigin(0, 0);
      // fixed it so it won't move when the camera moves.
      this.bg_1.setScrollFactor(0);
+     
+     // play music
+     music = this.sound.add('sfx_music');
+     music.play(globalVolume);
+     
 
      // start button
      this.startButton = this.add.sprite(400, 350, 'button1')
@@ -56,12 +61,9 @@ class Menu extends Phaser.Scene {
     .on('pointerup', () => {
       this.scene.start("optionsScene");
       this.sound.play('sfx_select_2');
-     // music.stop();
+     // music.stop(globalVolume);
       this.enterButtonHoverState2();
   });
-      // play music
-      music = this.sound.add('sfx_music');
-      music.play();
       
       let menuConfig = {
         fontFamily: 'Helvetica',
@@ -84,6 +86,7 @@ class Menu extends Phaser.Scene {
 
     // define keys
      keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+     
     
     } // end of create function
 
@@ -106,6 +109,9 @@ class Menu extends Phaser.Scene {
 
     // scrolls the background
       this.bg_1.tilePositionX += 0.2;
+      if(counter == 1){
+        music.play(globalVolume);
+      }
 
       /*game.settings = {
         //BlockSpeed: 4,
@@ -113,5 +119,8 @@ class Menu extends Phaser.Scene {
       }*/  
 
     } // update function ends
+    
+
+    
              
 } // end of Menu class 

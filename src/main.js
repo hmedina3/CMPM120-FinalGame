@@ -62,22 +62,6 @@ let deathConfig = {
   },
   fixedWidth: 500
 }
-
-  // reserve keyboard vars
-let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN;
-
-let game = new Phaser.Game(config); 
-
-// define game settings
-game.settings = {
-  // 30 second timer
-  gameTimer: 30000,
-  playerSpeed: 200,
-  EnemySpeed: 8,
-  gameScore: 0,
-  gameHealth: 100,
-}
-// global music variable
 let music = {
   mute: false,
   volume: 0.5,
@@ -87,3 +71,23 @@ let music = {
   loop: true,
   delay: 0
 }
+
+  // reserve keyboard vars
+let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN;
+
+let game = new Phaser.Game(config);
+
+let counter = 0, globalVolume, globalCount = 3 ;
+
+// define game settings
+game.settings = {
+  // 30 second timer
+  gameTimer: 30000,
+  playerSpeed: 200,
+  EnemySpeed: 8,
+  gameScore: 0,
+  gameHealth: 100,
+  
+}
+// global music variable
+

@@ -17,6 +17,8 @@ class Enemy extends Phaser.GameObjects.Sprite{
         
         //this.bar = scene.add.image(300,300,"health").setScale(0.5,0.5);
         this.shooting = false;
+        this.even = 0;
+        this.timing = 0;
         //this.laser = scene.add.tileSprite(0,0,200,150,'lasers');//([where on screen],[which area in image])
         
        
@@ -26,47 +28,176 @@ class Enemy extends Phaser.GameObjects.Sprite{
         this.setPercent(this.health);
         this.bar.y = this.y - 15;
         this.bar.x = this.x + 37;
-        
 
         //move enemy up and down
-        this.y += this.speed;
+        //this.y += this.speed;
 
         //setting different algorithm for different enemy types
-        //if (this.speed == whatever){ do this} //you know what type of 
-        //enemy is which by their speed
+        //you know what type of enemy is which by their speed
+        //enemy1
+        if (this.speed == 8){
 
-        //wraparound screen bounds
-        if(this.y >= config.height){
-            //this.x = game.config.width;
-            this.reset();
-        }
+            //move enemy up and down
+            this.y += this.speed;
+            
+            //generate random number
+            let random = Math.random();
 
-        //generate random number
-        let random = Math.random();
+            //enemy shoots attacks at random 
+            if(random <= .03 && this.shooting == false && this.isDead == false){ // for every 3% chance, the enemy will shoot a laser
+                this.shooting = true;
+                this.laser = this.scene.add.tileSprite(this.x,this.y+50,90,67,'lasers');
+                this.scene.physics.add.existing(this.laser);
+                this.laser.body.setSize(35,10,true);
 
-        //enemy shoots attacks at random 
-        if(random <= .03 && this.shooting == false && this.isDead == false){ // for every 3% chance, the enemy will shoot a laser
-            this.shooting = true;
-            this.laser = this.scene.add.tileSprite(this.x,this.y+50,90,67,'lasers');
-            this.scene.physics.add.existing(this.laser);
-            this.laser.body.setSize(35,10,true);
+            }
 
-        }
-
-        //moving laser if enemy shot one
-        if(this.shooting == true && this.isDead == false){
-            this.laser.x -= 9;
-            if(this.laser.x <= 0 && this.shooting == true){
-                this.laser.x = -100;
-                this.shooting = false;
+            //moving laser if enemy shot one
+            if(this.shooting == true && this.isDead == false){
+                this.laser.x -= 9;
+                if(this.laser.x <= 0 && this.shooting == true){
+                    this.laser.x = -100;
+                    this.shooting = false;
+                }
             }
         }
 
+        //enemy2
+        if (this.speed == 5){ 
+
+            //move enemy up and down
+            this.y += this.speed;
+
+            //generate random number
+            let random = Math.random();
+
+            //enemy shoots attacks at random 
+            if(random <= .03 && this.shooting == false && this.isDead == false){ // for every 3% chance, the enemy will shoot a laser
+                this.shooting = true;
+                this.laser = this.scene.add.tileSprite(this.x- 250,this.y+25,0,0,'yellow_lasers').setScale(2.5,1);
+                this.scene.physics.add.existing(this.laser);
+                this.laser.body.setSize(200,20);
+
+            }
+
+            //moving laser if enemy shot one
+            if(this.shooting == true && this.isDead == false){
+                this.laser.y = this.y + 25;
+                if(this.laser.y >= config.height && this.shooting == true){
+                    this.laser.destroy();
+                    this.shooting = false;
+                }
+            }
+            
+        }
+
+        //enemy3
+        if (this.speed == 15){ 
+            
+            //get player y coordinates
+            this.playerY = this.scene.player.y;
+
+            //control shooting rate
+            this.even += 1;
+            this.check = this.even%2;
+
+            //destroy laser
+            this.timing +=1;
+
+            //move enemy up and down
+            if(this.y < this.playerY && this.shooting == false){ //move down
+                this.y += this.speed;
+                if(this.y >= this.playerY){
+                    const stay = this.playerY;
+                    this.y = stay;
+                     
+                }
+
+            }else if(this.y > this.playerY && this.shooting == false){ //move up
+                this.y -= this.speed;
+                if(this.y <= this.playerY){
+                    const stay = this.playerY;
+                    this.y = stay;
+                    
+                }
+            }else{ //this.y == this.playerY
+                const stay = this.playerY;
+                this.y = stay;
+                
+            }
+
+            //enemy shoots attacks in intervals of 4
+            if(this.check == 0 && this.shooting == false && this.isDead == false){ // for every 3% chance, the enemy will shoot a laser
+                this.shooting = true;
+                this.laser = this.scene.add.tileSprite(this.x,this.y+50,90,67,'lasers');
+                this.scene.physics.add.existing(this.laser);
+                this.laser.body.setSize(40,10,true);
+                this.scene.physics.world.enableBody(this.laser);
+                
+            } 
+
+            //moving laser if enemy shot one
+            if(this.shooting == true && this.isDead == false){
+                this.laser.x -= this.speed;
+                if(this.shooting == true && this.laser.x <= 0){
+                    this.laser.destroy();
+                    this.shooting = false;
+                }
+            }
+            
+        }
+
+        //enemy4
+        if (this.speed == 18){ 
+
+            //move enemy up and down
+            this.y += this.speed;
+
+            //control shooting rate
+            this.even += 1;
+            this.check = this.even%3;
+
+            //enemy shoots attack constantly while its alive
+            if(this.check == 0 && this.isDead == false){ 
+                this.shooting = true;
+                this.laser = this.scene.add.tileSprite(this.x,this.y+50,90,67,'lasers');
+                this.scene.physics.add.existing(this.laser);
+                this.scene.physics.world.enableBody(this.laser);
+                this.laser.body.setSize(35,10,true);
+                this.scene.enemy4Laser.add(this.laser);
+
+            }
+
+            //moving laser if enemy shot one
+            if(this.shooting == true && this.isDead == false){
+                for( let j = 0; j < this.scene.enemy4Laser.getChildren().length; j++){
+                    this.attack = this.scene.enemy4Laser.getChildren()[j];
+                    this.attack.body.velocity.x = -250;
+                
+                    if(this.attack.body.x <= 0 && this.shooting == true){
+                        this.attack.destroy();
+                    }
+                }
+            }
+                
+        }
+
+        //wraparound screen bounds
+        if(this.y >= config.height){
+            this.resetUp();
+        }
+        if(this.y <= -300){
+            this.resetDown();
+        }
 
     }
 
-    reset(){
+    resetUp(){
         this.y = -200;
+    }
+
+    resetDown(){
+        this.y = 800;
     }
 
     setPercent(percent){
@@ -89,4 +220,5 @@ class Enemy extends Phaser.GameObjects.Sprite{
             return false;
         }
     }
+    
 }

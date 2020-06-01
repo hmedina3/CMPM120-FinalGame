@@ -25,6 +25,7 @@ class Play extends Phaser.Scene {
         //load images/tile sprites
         this.load.image('bullets','./assets/spr_bullet_strip.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
         this.load.image('lasers','./assets/spr_bullet_strip02.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
+        this.load.image('yellow_lasers','./assets/laser2.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
 
         //icons for power-ups
 
@@ -32,7 +33,7 @@ class Play extends Phaser.Scene {
         this.load.image('background','./assets/Space-Background-4.jpg');
 
         //spritesheets
-        this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 18, frameheight: 20, startFrame: 0, endFrame: 20});
+        this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 39, frameheight: 39, startFrame: 0, endFrame: 20});
         
         //health bar
         this.load.image('health','./assets/healthbar.png');
@@ -116,7 +117,7 @@ class Play extends Phaser.Scene {
         this.enemy1.anims.play('enemy1',true);
         this.enemy1.body.setSize(98,70,0,0);// (x,y,[center])
         //enemy2 (blue one)
-        this.enemy2 = new Enemy(this, 450, -100,'enemy2', 0,10).setScale(1,1).setOrigin(0,0);
+        this.enemy2 = new Enemy(this, 450, -100,'enemy2', 0,5).setScale(1,1).setOrigin(0,0);
         this.physics.add.existing(this.enemy2);
         this.enemy2.anims.play('enemy2',true);
         this.enemy2.body.setSize(87,65,0,0);// (x,y,[center])
@@ -137,6 +138,9 @@ class Play extends Phaser.Scene {
         this.theEnemies.add(this.enemy2);
         this.theEnemies.add(this.enemy3);
         this.theEnemies.add(this.enemy4);
+
+        //putting all lasers into a group for enemy4's attacks
+        this.enemy4Laser = this.physics.add.group();
         
         // Creating main character and adding to location x y
         this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
@@ -173,18 +177,18 @@ class Play extends Phaser.Scene {
         this.health.setPercent(game.settings.gameHealth);
 
         this.gameOver = false;
+        this.gameWin = false;
         
 
     }   // end of create function
    
     update() {
         
-        
-        //tracking time
+        //tracking time and game status
         if(this.gameOver == false){
             this.timer += 0.04;
         }else{
-            this.timer == this.timer;
+            this.deathScene();
         }
 
         //display time
@@ -218,7 +222,7 @@ class Play extends Phaser.Scene {
                     //enemy health goes down
                     this.opponent.health -= 10;
                     this.opponent.setPercent(this.opponent.health);
-                    //bullet/laser gets destroy
+                    //bullet gets destroy
                     this.one.destroy();
                     //if enemy runs out of health, they die
                     if(this.opponent.health == 0){
@@ -236,39 +240,94 @@ class Play extends Phaser.Scene {
         //checking for collision between enemy attack and player
         for(let k = 0; k < this.theEnemies.getChildren().length; k++){
             this.one = this.theEnemies.getChildren()[k];
-            if(this.physics.overlap(this.player,this.one.laser) == true){
-                this.one.laser.destroy();
-                game.settings.gameHealth -= 10;
-                this.health.setPercent(game.settings.gameHealth)
+            if( this.one.speed == 18){ //for enemy 4's attacks
+                for(let j = 0; j < this.enemy4Laser.getChildren().length; j++){
+                    this.attack = this.enemy4Laser.getChildren()[j];
+                    if(this.physics.overlap(this.player,this.attack) == true){
+                        this.one.laser.destroy();
+                        game.settings.gameHealth -= 1;
+                        this.health.setPercent(game.settings.gameHealth)
 
-                // move to death scene if health bar is 0
-                if(game.settings.gameHealth == 0){
-                    this.gameOver = true;                  
-                    music.stop();
-                    this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
-                    this.add.text(game.config.width/2, game.config.height/4 + 50, 'Survival Time: ' + this.timer ,highScoreConfig).setOrigin(0.5);
-                    this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+                        // move to death scene if health bar is 0
+                        if(game.settings.gameHealth <= 0){
+                            this.gameOver = true; 
+                            this.deathScene();                
+                        }
+                    }
+                }
+            }
+            else{ //for enemy 1, enemy 2, enemy 3 's atacks
+                if(this.physics.overlap(this.player,this.one.laser) == true){
+                    if(this.one.speed != 5){ //destroy all red laser
+                        this.one.laser.destroy();
+                        game.settings.gameHealth -= 10;
+                        this.health.setPercent(game.settings.gameHealth)
 
-                    // check for input during death scene
-                    if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
-                        this.scene.restart(this.timer);
-                        game.settings.gameScore = 0;
-                        music.stop();
-                        //this.scene.restart(this.p1Score);
-                        this.scene.start('playScene');
+                    }else{ //for yellow laser
+                        game.settings.gameHealth -= 3;
+                        this.health.setPercent(game.settings.gameHealth)
+
                     }
-                    if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
-                        music.stop();
-                        this.scene.start('menuScene');
+                    
+                    // move to death scene if health bar is 0
+                    if(game.settings.gameHealth <= 0){
+                        this.gameOver = true;
+                        this.deathScene();
                     }
-                
                 }
             }
         }
 
-        // when the player beats the boss level
-        if(this.timer <= 0 || this.player.y > game.config.height){
-            this.gameOver = true;
+  
+        this.enemy1.update();
+        this.enemy2.update();
+        this.enemy3.update();
+        this.enemy4.update();
+        this.player.update();
+
+    } // end of update function. 
+
+    basicAttack(){
+      var attack = new BasicAttack(this);
+    }
+    
+    //death Scene
+    deathScene(){
+        if(this.gameOver == true){
+            //prevent health bar from increasing
+            this.health.setPercent(0);
+            game.settings.gameHealth = 0;
+
+            //prevent time from increasing
+            this.timer == this.timer;
+
+            //stop music
+            music.stop();
+
+            //display message
+            this.add.text(game.config.width/2, game.config.height/4 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/3 + 50, 'Survival Time: ' + Math.floor(this.timer) ,highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+
+            // check for input during death scene
+            if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+                game.settings.gameScore = 0;
+                game.settings.gameHealth = 100;
+                music.stop();
+                this.scene.restart();
+                //this.scene.start('playScene');
+            }
+            if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+                music.stop();
+                this.scene.start('menuScene');
+            }
+        }
+    }
+
+    //win scene
+    winScene(){
+        // when the player beats the boss level, go to win scene
+        if(this.gameWin == true){
             //tracking shortest time
             if(shortestTime == null || shortestTime == 0){
                 localStorage.setItem("high-score", 1000);
@@ -295,18 +354,5 @@ class Play extends Phaser.Scene {
             }
         
         }
-  
-        this.enemy1.update();
-        this.enemy2.update();
-        this.enemy3.update();
-        this.enemy4.update();
-        this.player.update();
-
-    } // end of update function. 
-
-    basicAttack(){
-      var attack = new BasicAttack(this);
     }
-    
-   
 }

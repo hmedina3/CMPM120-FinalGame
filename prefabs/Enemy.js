@@ -74,7 +74,7 @@ class Enemy extends Phaser.GameObjects.Sprite{
             //enemy shoots attacks at random 
             if(random <= .03 && this.shooting == false && this.isDead == false){ // for every 3% chance, the enemy will shoot a laser
                 this.shooting = true;
-                this.laser = this.scene.add.tileSprite(this.x- 250,this.y+25,0,0,'yellow_lasers').setScale(2.5,1);
+                this.laser = this.scene.add.tileSprite(this.x- 300,this.y+25,0,0,'yellow_lasers').setScale(3.5,1);
                 this.scene.physics.add.existing(this.laser);
                 this.laser.body.setSize(200,20);
 
@@ -92,7 +92,7 @@ class Enemy extends Phaser.GameObjects.Sprite{
         }
 
         //enemy3
-        if (this.speed == 15){ 
+        if (this.speed == 15 && this.isDead == false){ 
             
             //get player y coordinates
             this.playerY = this.scene.player.y;

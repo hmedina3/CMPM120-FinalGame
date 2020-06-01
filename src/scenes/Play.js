@@ -112,22 +112,22 @@ class Play extends Phaser.Scene {
         
         // different types of enemies
         // enemy1
-        this.enemy1 = new Enemy(this, 500, -200,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
+        this.enemy1 = new Enemy(this, 550, -200,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
         this.physics.add.existing(this.enemy1);
         this.enemy1.anims.play('enemy1',true);
         this.enemy1.body.setSize(98,70,0,0);// (x,y,[center])
         //enemy2 (blue one)
-        this.enemy2 = new Enemy(this, 450, -100,'enemy2', 0,5).setScale(1,1).setOrigin(0,0);
+        this.enemy2 = new Enemy(this, 650, -100,'enemy2', 0,5).setScale(1,1).setOrigin(0,0);
         this.physics.add.existing(this.enemy2);
         this.enemy2.anims.play('enemy2',true);
         this.enemy2.body.setSize(87,65,0,0);// (x,y,[center])
         //enemy3 (red one)
-        this.enemy3 = new Enemy(this, 400, -50,'enemy3', 0,15).setScale(1,1).setOrigin(0,0);
+        this.enemy3 = new Enemy(this, 700, -50,'enemy3', 0,15).setScale(1,1).setOrigin(0,0);
         this.physics.add.existing(this.enemy3);
         this.enemy3.anims.play('enemy3',true);
         this.enemy3.body.setSize(87,65,0,0);// (x,y,[center])
         //enemy4 (small gray one)
-        this.enemy4 = new Enemy(this, 300, -250,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
+        this.enemy4 = new Enemy(this, 750, -250,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
         this.physics.add.existing(this.enemy4);
         this.enemy4.anims.play('enemy4',true);
         this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])

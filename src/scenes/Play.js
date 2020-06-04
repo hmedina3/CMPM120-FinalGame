@@ -41,11 +41,18 @@ class Play extends Phaser.Scene {
         this.load.image('boxhide','./assets/healthbarhide.png');
         this.load.image('outline','./assets/healthbaroutline.png');
         this.load.image('enemyHealth','./assets/enemyhealthbar.png');
+
+        //boss sprite
+        this.load.spritesheet('boss','./assets/bossbig.png', {frameWidth: 885, frameheight: 749, startFrame: 0, endFrame: 2});
+        this.load.image('boss1','./assets/boss1big.png');
+        this.load.image('boss2','./assets/boss2big.png');
+        this.load.image('boss3','./assets/boss3big.png');
+        this.load.image('bossAttack','./assets/bosspower.png');
     }
 
     create()  {
 
-        //player time core
+        //player time score
         this.timer = game.settings.gameScore;
 
         //place background
@@ -109,8 +116,18 @@ class Play extends Phaser.Scene {
             framerate:60,
             repeat: -1,
         })
+
+        //animation for boss
+        /*
+        this.anims.create({
+            key:'boss',
+            frames: this.anims.generateFrameNumbers('boss',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        })*/
         
         // different types of enemies
+        /*
         // enemy1
         this.enemy1 = new Enemy(this, 550, -200,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
         this.physics.add.existing(this.enemy1);
@@ -131,16 +148,109 @@ class Play extends Phaser.Scene {
         this.physics.add.existing(this.enemy4);
         this.enemy4.anims.play('enemy4',true);
         this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
+        */
 
+        //spawn enemies
+        this.enemiesLeft = 0;
+        this.theEnemies = this.physics.add.group();
+        // spawn enemy2
+        this.amount = Phaser.Math.Between(0,1);
+        for( let i = 0; i<this.amount; i++){
+            let y = -100;
+            let x = 650;
+            switch(Phaser.Math.Between(0,1)){
+                case 0: y = Phaser.Math.Between(-50, -250);
+                        x = Phaser.Math.Between(600, 650);
+                    break;
+                case 1: y = Phaser.Math.Between(650, 850);
+                        x = Phaser.Math.Between(600, 650);
+                    break;
+            }
+            this.enemy2 = new Enemy(this, x, y,'enemy2', 0,5).setScale(1,1).setOrigin(0,0);
+            this.physics.add.existing(this.enemy2);
+            this.enemy2.anims.play('enemy2',true);
+            this.enemy2.body.setSize(87,65,0,0);// (x,y,[center])
+            this.theEnemies.add(this.enemy2);
+            this.enemiesLeft += 1;
+        }
+        //spawn enemy4
+        for( let i = 0; i<this.amount; i++){
+            let y = -250;
+            let x = 750;
+            switch(Phaser.Math.Between(0,1)){
+                case 0: y = Phaser.Math.Between(-50, -250);
+                        x = Phaser.Math.Between(700, 750);
+                    break;
+                case 1: y = Phaser.Math.Between(650, 850);
+                        x = Phaser.Math.Between(700, 750);
+                    break;
+            }
+            this.enemy4 = new Enemy(this, x, y,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
+            this.physics.add.existing(this.enemy4);
+            this.enemy4.anims.play('enemy4',true);
+            this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
+            this.theEnemies.add(this.enemy4);
+            this.enemiesLeft += 1;
+        }
+        //spawn enemy3
+        for( let i = 0; i<this.amount+1; i++){
+            let y = -50;
+            let x = 700;
+            switch(Phaser.Math.Between(0,1)){
+                case 0: y = Phaser.Math.Between(-50, -250);
+                        x = Phaser.Math.Between(650, 700);
+                    break;
+                case 1: y = Phaser.Math.Between(650, 850);
+                        x = Phaser.Math.Between(650, 700);
+                    break;
+            }
+            this.enemy3 = new Enemy(this, x, y,'enemy3', 0,15).setScale(1,1).setOrigin(0,0);
+            this.physics.add.existing(this.enemy3);
+            this.enemy3.anims.play('enemy3',true);
+            this.enemy3.body.setSize(87,65,0,0);// (x,y,[center])
+            this.theEnemies.add(this.enemy3);
+            this.enemiesLeft += 1;
+        }
+
+        //spawn enemy1
+        for( let i = 0; i<this.amount+2; i++){
+            let y = -200;
+            let x = 550;
+            switch(Phaser.Math.Between(0,1)){
+                case 0: y = Phaser.Math.Between(-50, -250);
+                        x = Phaser.Math.Between(500, 550);
+                    break;
+                case 1: y = Phaser.Math.Between(650, 850);
+                        x = Phaser.Math.Between(500, 550);
+                    break;
+            }
+            this.enemy1 = new Enemy(this, x, y,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
+            this.physics.add.existing(this.enemy1);
+            this.enemy1.anims.play('enemy1',true);
+            this.enemy1.body.setSize(98,70,0,0);// (x,y,[center])
+            this.theEnemies.add(this.enemy1);
+            this.enemiesLeft += 1;
+        }
+
+        /*
+        //testig boss
+        this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
+        this.physics.add.existing(this.boss);
+        this.boss.body.setCircle(270,183,188);
+        */
+
+        /*
         //putting all types of enemies into a group
         this.theEnemies = this.physics.add.group();
         this.theEnemies.add(this.enemy1);
         this.theEnemies.add(this.enemy2);
         this.theEnemies.add(this.enemy3);
         this.theEnemies.add(this.enemy4);
+        */
 
         //putting all lasers into a group for enemy4's attacks
         this.enemy4Laser = this.physics.add.group();
+        this.bossLaser = this.physics.add.group();
         
         // Creating main character and adding to location x y
         this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
@@ -178,6 +288,7 @@ class Play extends Phaser.Scene {
 
         this.gameOver = false;
         this.gameWin = false;
+        this.bossStage = false;
         
 
     }   // end of create function
@@ -185,16 +296,18 @@ class Play extends Phaser.Scene {
     update() {
         
         //tracking time and game status
-        if(this.gameOver == false){
+        if(this.gameOver == false || this.gameWin == false){
             this.timer += 0.04;
         }else{
-            this.deathScene();
+            if(this.gameOver == true){
+                this.deathScene();
+            }
         }
 
         //display time
         this.showTime = this.add.text(490,33,'Time: ' + Math.floor(this.timer), scoreConfig);
 
-        let shortestTime = localStorage.getItem("high-score");
+        this.shortestTime = localStorage.getItem("high-score");
  
         
         // moves background
@@ -229,6 +342,7 @@ class Play extends Phaser.Scene {
                         this.opponent.destroy();
                         this.opponent.bar.destroy();
                         this.opponent.laser.destroy();
+                        this.enemiesLeft -= 1;
                         this.opponent.isDead = true;
                     }
                 }
@@ -244,8 +358,9 @@ class Play extends Phaser.Scene {
                 for(let j = 0; j < this.enemy4Laser.getChildren().length; j++){
                     this.attack = this.enemy4Laser.getChildren()[j];
                     if(this.physics.overlap(this.player,this.attack) == true){
-                        this.one.laser.destroy();
-                        game.settings.gameHealth -= 1;
+                        //this.one.laser.destroy();
+                        this.attack.destroy();
+                        game.settings.gameHealth -= 2;
                         this.health.setPercent(game.settings.gameHealth)
 
                         // move to death scene if health bar is 0
@@ -278,12 +393,82 @@ class Play extends Phaser.Scene {
             }
         }
 
+        //entering boss stage
+        if( this.bossStage == true){
+
+            this.boss.update();
+
+            //collision detection between player attck to boss
+            for(let k = 0; k < this.projectiles.getChildren().length; k++){
+                this.one = this.projectiles.getChildren()[k];
+                //if an enemy and a bullet/laser collide
+                if(this.physics.overlap(this.one,this.boss) == true){
+                    //enemy health goes down
+                    this.boss.health -= 5;
+                    this.boss.setPercent(this.boss.health);
+                    //bullet gets destroy
+                    this.one.destroy();
+                    //if enemy runs out of health, they die
+                    if(this.boss.health == 0){
+                        this.boss.destroy();
+                        this.boss.bar.destroy();
+                        this.boss.laser.destroy();
+                        this.boss.laser2.destroy();
+                        this.boss.laser3.destroy();
+                        this.enemiesLeft -= 1;
+                        this.boss.isDead = true;
+                        this.gameWin = true;
+                    }
+                }
+                
+            }
+
+            //collision detection between boss attack to player
+            for(let l = 0; l < this.bossLaser.getChildren().length; l++){
+                this.power = this.bossLaser.getChildren()[l];
+                if(this.physics.overlap(this.player,this.power) == true){
+                    game.settings.gameHealth -= 1;
+                    this.health.setPercent(game.settings.gameHealth);
+                }
+                    
+                // move to death scene if health bar is 0
+                if(game.settings.gameHealth <= 0){
+                    this.gameOver = true;
+                    this.deathScene();
+                }
+                
+            }
+
+            if(this.gameWin == true){
+                this.winScene();
+            }
+
+        }
+
+        
+        //spawn boss when enemies are all defeated
+        if(this.enemiesLeft <= 0){
+            this.enemiesLeft = 1;
+            this.bossStage = true;
+            this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
+            this.physics.add.existing(this.boss);
+            this.boss.body.setCircle(270,183,188); //(radius, x offset, y offset)
+            //this.boss.setTexture('boss3');
+        }
+
   
-        this.enemy1.update();
-        this.enemy2.update();
-        this.enemy3.update();
-        this.enemy4.update();
+        //this.enemy1.update();
+        //this.enemy2.update();
+        //this.enemy3.update();
+        //this.enemy4.update();
         this.player.update();
+        //this.boss.update();
+
+        //update enemies
+        for(let m =0; m<this.theEnemies.getChildren().length; m++){
+            this.update = this.theEnemies.getChildren()[m];
+            this.update.update();
+        }
 
     } // end of update function. 
 
@@ -329,16 +514,25 @@ class Play extends Phaser.Scene {
         // when the player beats the boss level, go to win scene
         if(this.gameWin == true){
             //tracking shortest time
-            if(shortestTime == null || shortestTime == 0){
+            if(this.shortestTime == null || this.shortestTime == 0){
                 localStorage.setItem("high-score", 1000);
-                shortestTime = 1000;
-            }else if(this.timer < shortestTime){
+                this.shortestTime = 1000;
+            }else if(this.timer < this.shortestTime){
                 localStorage.setItem("high-score", this.timer);
             }
+
+            //prevent health bar from increasing
+            const stop2 = game.settings.gameHealth
+            game.settings.gameHealth = stop2;
+            this.health.setPercent(stop2);
+
+            //prevent time from increasing
+            const stop = this.timer;
+            this.timer = stop;
+
             music.stop();
             this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/8 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + localStorage.getItem("high-score"),highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
 
             // check for input during end scene
@@ -346,7 +540,7 @@ class Play extends Phaser.Scene {
                 this.scene.restart(this.p1Score);
                 game.settings.gameScore = 0;
                 music.stop();
-                this.scene.start('playScene');
+                this.scene.restart();
             }
             if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
                 this.scene.start('menuScene');

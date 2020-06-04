@@ -13,15 +13,19 @@ class Enemy extends Phaser.GameObjects.Sprite{
         this.health = 100;
         this.isDead = false;
         this.bar = scene.add.image(x,y-30,"enemyHealth").setScale(0.25,0.25);
-        
-        
         //this.bar = scene.add.image(300,300,"health").setScale(0.5,0.5);
         this.shooting = false;
         this.even = 0;
         this.timing = 0;
         //this.laser = scene.add.tileSprite(0,0,200,150,'lasers');//([where on screen],[which area in image])
         
-       
+       //determining direction
+       if( y <= 0){
+           this.where = -10;
+       }else{
+           this.where = 10;
+       }
+
     }
 
     update(){
@@ -38,7 +42,12 @@ class Enemy extends Phaser.GameObjects.Sprite{
         if (this.speed == 8){
 
             //move enemy up and down
-            this.y += this.speed;
+            if(this.where <= 0){
+                this.y += this.speed;
+            }else{
+                this.y -= this.speed;
+            }
+            
             
             //generate random number
             let random = Math.random();
@@ -66,7 +75,11 @@ class Enemy extends Phaser.GameObjects.Sprite{
         if (this.speed == 5){ 
 
             //move enemy up and down
-            this.y += this.speed;
+            if(this.where <= 0){
+                this.y += this.speed;
+            }else{
+                this.y -= this.speed;
+            }
 
             //generate random number
             let random = Math.random();
@@ -151,7 +164,11 @@ class Enemy extends Phaser.GameObjects.Sprite{
         if (this.speed == 18){ 
 
             //move enemy up and down
-            this.y += this.speed;
+            if(this.where <= 0){
+                this.y += this.speed;
+            }else{
+                this.y -= this.speed;
+            }
 
             //control shooting rate
             this.even += 1;
@@ -183,10 +200,10 @@ class Enemy extends Phaser.GameObjects.Sprite{
         }
 
         //wraparound screen bounds
-        if(this.y >= config.height){
+        if(this.y >= config.height && this.where <= 0){
             this.resetUp();
         }
-        if(this.y <= -300){
+        if(this.y <= -300 && this.where >= 10){
             this.resetDown();
         }
 
@@ -204,7 +221,7 @@ class Enemy extends Phaser.GameObjects.Sprite{
         percent = percent/100;
         this.bar.setScale(0.25*percent,0.25);
         
-        if(percent == 0){
+        if(percent <= 0){
             this.isDead == true
         }
     }

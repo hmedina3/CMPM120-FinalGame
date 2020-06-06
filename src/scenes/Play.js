@@ -481,7 +481,7 @@ class Play extends Phaser.Scene {
             this.timer == this.timer;
 
             //stop music
-            music.stop();
+            this.bgMusic.stop();
 
             //display message
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
@@ -524,7 +524,7 @@ class Play extends Phaser.Scene {
             const stop = this.timer;
             this.timer = stop;
 
-            music.stop();
+            this.bgMusic.stop();
             this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
@@ -533,12 +533,12 @@ class Play extends Phaser.Scene {
             if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
                 this.scene.restart(this.p1Score);
                 game.settings.gameScore = 0;
-                music.stop();
+                this.bgMusic.stop();
                 this.scene.restart();
             }
             if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
                 this.scene.start('menuScene');
-                music.stop();
+                this.bgMusic.stop();
             }
         
         }

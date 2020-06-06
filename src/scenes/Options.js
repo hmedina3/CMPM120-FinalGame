@@ -1,8 +1,6 @@
 class Options extends Phaser.Scene {
     /*
-    volume needs to be tracked for all scenes.
-    add a credits section
-    add control for in game sound? or just have one for all sound.
+    volume tracked for all scenes.
     */
      
     constructor() {
@@ -55,6 +53,7 @@ class Options extends Phaser.Scene {
 
     this.add.text(140,117, "Music", textConfig);
     this.volumeText = this.add.text(340,120, globalCount, textConfig);
+   
 
     // left arrow functionality
     this.leftButton = this.add.sprite(300, 150, 'leftArrow').setScale(0.5,0.5);
@@ -101,10 +100,18 @@ class Options extends Phaser.Scene {
    this.enterButtonHoverState2();
 });
 
-
-
-  // back button functionality
-  this.backButton = this.add.sprite(80, 550, 'backButton').setScale(0.2,0.2);
+// Credits button
+this.creditsText = this.add.text(140,200, "Credits", textConfig);
+// credits functionality
+this.creditsText.setInteractive().on('pointerover', () => this.enterButtonHoverState3() )
+.on('pointerout', () => this.enterButtonRestState3() )
+.on('pointerup', () => {
+  this.sound.play('sfx_select_2');
+  this.scene.start("creditsScene");
+  this.enterButtonHoverState3();
+});
+// back button functionality
+this.backButton = this.add.sprite(80, 550, 'backButton').setScale(0.2,0.2);
 
 
 } // end of create function
@@ -125,11 +132,40 @@ enterButtonHoverState2() {
   enterButtonRestState2() {
     this.add.sprite(400, 150, 'rightArrow').setScale(0.5,0.5);
   }
-  // hover states for back button
+  // hover states for credits
 enterButtonHoverState3() {
+  let textConfig2 = {
+    fontFamily: 'Helvetica',
+    fontSize: '40px',
+    color: '#ffff00', // yellow
+    align: 'right',
+    padding: {
+        top: 5,
+        bottom: 5,
+    },
+    fixedWidth: 0
+}
+  this.creditsText = this.add.text(140,200, "Credits", textConfig2);
+}
+enterButtonRestState3() {
+  let textConfig2 = {
+    fontFamily: 'Helvetica',
+    fontSize: '40px',
+    color: '#fafafa', // white
+    align: 'right',
+    padding: {
+        top: 5,
+        bottom: 5,
+    },
+    fixedWidth: 0
+}
+  this.creditsText = this.add.text(140,200, "Credits", textConfig2);
+}
+  // hover states for back button
+  enterButtonHoverState4() {
     this.backButton = this.add.sprite(80, 550, 'backButton2').setScale(0.2,0.2);
   }
-  enterButtonRestState3() {
+  enterButtonRestState4() {
     this.add.sprite(80, 550, 'backButton').setScale(0.2,0.2);
   }
 
@@ -137,16 +173,15 @@ enterButtonHoverState3() {
     update() {
         // scrolls the background
         this.bg_2.tilePositionX += 0.2; 
-        console.log(globalCount);
-
-// back button functionality
+        
+        // back button functionality
         this.backButton.setInteractive()
-        .on('pointerover', () => this.enterButtonHoverState3() )
-        .on('pointerout', () => this.enterButtonRestState3() )
+        .on('pointerover', () => this.enterButtonHoverState4() )
+        .on('pointerout', () => this.enterButtonRestState4() )
         .on('pointerup', () => {
           this.sound.play('sfx_select_2');
           this.scene.start("menuScene");
-          this.enterButtonHoverState3();
+          this.enterButtonHoverState4();
       });
 
 

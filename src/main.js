@@ -6,7 +6,7 @@ Game title: ?
 Date completed: pending...
 
 */
-
+//import AudioManager from './AudioManager'
 
 let config = {
     type: Phaser.AUTO,
@@ -20,6 +20,10 @@ let config = {
       }
     }
 }
+// global music variables 
+let bgMusicPlaying = false;
+let music = null;
+let globalCount = 3;
 
 // score display
 let scoreConfig = {
@@ -62,22 +66,13 @@ let deathConfig = {
   },
   fixedWidth: 500
 }
-let music = {
-  mute: false,
-  volume: 0.5,
-  rate: 1,
-  detune: 0,
-  seek: 0,
-  loop: true,
-  delay: 0
-}
+
 
   // reserve keyboard vars
 let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN;
 
 let game = new Phaser.Game(config);
 
-let counter = 0, globalVolume, globalCount = 3 ;
 
 // define game settings
 game.settings = {
@@ -89,5 +84,3 @@ game.settings = {
   gameHealth: 100,
   
 }
-// global music variable
-

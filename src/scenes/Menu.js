@@ -35,35 +35,32 @@ class Menu extends Phaser.Scene {
      this.bg_1.setScrollFactor(0);
      
      // play music
-     music = this.sound.add('sfx_music');
-     music.play(globalVolume);
+     
+     if(bgMusicPlaying == false){
+      this.bgMusic = this.sound.add('sfx_music');
+      let musicConfig = {
+        mute: false,
+        volume: 0.5,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: true,
+        delay: 0
+      }
+      
+      this.bgMusic.play(musicConfig);
+      bgMusicPlaying = true;
+      music = this.bgMusic;
+    //  this.sys.game.globals.bgMusic = this.bgMusic;
+     }
+     
      
 
      // start button
-     this.startButton = this.add.sprite(400, 350, 'button1')
-      .setInteractive()
-      .on('pointerover', () => this.enterButtonHoverState() )
-      .on('pointerout', () => this.enterButtonRestState() )
-    //  .on('pointerdown', () => this.enterButtonActiveState() )
-      .on('pointerup', () => {
-        this.scene.start("playScene");
-        this.sound.play('sfx_select');
-        music.stop();
-        this.enterButtonHoverState();
-    });
+     this.startButton = this.add.sprite(400, 350, 'button1');
 
     // options button
-    this.optionsButton = this.add.sprite(400, 430, 'options1').setScale(0.1,0.1)
-    .setInteractive()
-    .on('pointerover', () => this.enterButtonHoverState2() )
-    .on('pointerout', () => this.enterButtonRestState2() )
-  //  .on('pointerdown', () => this.enterButtonActiveState() )
-    .on('pointerup', () => {
-      this.scene.start("optionsScene");
-      this.sound.play('sfx_select_2');
-     // music.stop(globalVolume);
-      this.enterButtonHoverState2();
-  });
+    this.optionsButton = this.add.sprite(400, 430, 'options1').setScale(0.1,0.1);
       
       let menuConfig = {
         fontFamily: 'Helvetica',
@@ -80,9 +77,8 @@ class Menu extends Phaser.Scene {
     let centerX = game.config.width/2;
     let centerY = game.config.height/2;
     let textSpacer = 64;
-
+    // title 
     this.add.text(centerX, centerY- textSpacer, "Project Ezekiel", menuConfig).setOrigin(0.5);
-    //this.add.text(centerX, centerY + textSpacer + 50, '«press space»', instructConfig).setOrigin(0.5);
 
     // define keys
      keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -90,6 +86,7 @@ class Menu extends Phaser.Scene {
     
     } // end of create function
 
+/********************************************************************************************************/
     // hover states for start button
     enterButtonHoverState() {
       this.startButton = this.add.sprite(400, 350, 'button2');
@@ -104,23 +101,36 @@ class Menu extends Phaser.Scene {
     enterButtonRestState2() {
       this.add.sprite(400, 430, 'options1').setScale(0.1,0.1);
     }
-
+/********************************************************************************************************/
     update() {
 
     // scrolls the background
       this.bg_1.tilePositionX += 0.2;
-      if(counter == 1){
-        music.play(globalVolume);
-      }
 
-      /*game.settings = {
-        //BlockSpeed: 4,
-        gameTimer: 60000    
-      }*/  
 
+    // start button
+     this.startButton.setInteractive()
+     .on('pointerover', () => this.enterButtonHoverState() )
+     .on('pointerout', () => this.enterButtonRestState() )
+     .on('pointerup', () => {
+
+       this.sound.play('sfx_select');
+       this.bgMusic.stop();
+       this.enterButtonHoverState();
+       this.scene.start("playScene");
+      
+   });
+
+      // options button
+      this.optionsButton.setInteractive().on('pointerover', () => this.enterButtonHoverState2() )
+      .on('pointerout', () => this.enterButtonRestState2() )
+      .on('pointerup', () => {
+        this.scene.start("optionsScene");
+        this.sound.play('sfx_select_2');
+        this.enterButtonHoverState2();
+      });
+    
     } // update function ends
     
 
-    
-             
 } // end of Menu class 

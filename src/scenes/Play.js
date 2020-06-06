@@ -43,25 +43,20 @@ class Play extends Phaser.Scene {
     }
 
     create()  {
-
+       
+        
         //player time core
         this.timer = game.settings.gameScore;
 
         //place background
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0.0);
 
-        // background music 
-        music = this.sound.add('sfx_music_2');
-        let musicConfig = {
-            mute: false,
-            volume: 1,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: true,
-            delay: 0
-          }
-        music.play(musicConfig);
+        // background music
+        if(bgMusicPlaying == true){
+        this.bgMusic = this.sound.add('sfx_music_2', { loop: true });
+        this.bgMusic.play(music);
+        bgMusicPlaying = false;
+        }
 
           // basic attack anims
         this.anims.create({

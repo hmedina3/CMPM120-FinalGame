@@ -29,7 +29,7 @@ class Credits extends Phaser.Scene {
         this.madeByText3.setFontSize('28px');
         this.madeByText4 = this.add.text(50, 400, "Even given the circumstances of the year 2020, we were able to push through and finish this game.", textConfig);
         this.madeByText4.setFontSize('16px');
-        this.madeByText4 = this.add.text(50, 420, "Let us look towards the future to advance humanity and work towards equality for all.", textConfig);
+        this.madeByText4 = this.add.text(50, 420, "Let us look towards the future to advance humanity and work hard towards equality for all.", textConfig);
         this.madeByText4.setFontSize('16px');
 
         // Time for credit scene

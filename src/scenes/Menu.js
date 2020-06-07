@@ -51,7 +51,7 @@ class Menu extends Phaser.Scene {
       this.bgMusic.play(musicConfig);
       bgMusicPlaying = true;
       music = this.bgMusic;
-    //  this.sys.game.globals.bgMusic = this.bgMusic;
+  
      }
      
      
@@ -117,7 +117,7 @@ class Menu extends Phaser.Scene {
        this.sound.play('sfx_select');
        this.bgMusic.stop();
        this.enterButtonHoverState();
-       this.scene.start("playScene");
+       this.scene.start("tutorialScene");
       
    });
 

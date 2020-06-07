@@ -67,8 +67,6 @@ class Options extends Phaser.Scene {
   music.volume -= 0.3;
     //globalVolume = music.volume;
      globalCount--;
-     console.log("left button pressed!");
-     console.log(globalCount);
    }
 
  if(globalCount == 0 ){

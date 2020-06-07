@@ -22,6 +22,20 @@ class Tutorial extends Phaser.Scene {
 
     create(){
 
+        // added this code for debugging purposes
+        let textConfig = {
+            fontFamily: 'Helvetica',
+            fontSize: '28px',
+            color: '#fafafa',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 0
+        }
+       
+
         // background music
             if(bgMusicPlaying == true){
             this.bgMusic = this.sound.add('sfx_music_3', {loop: true });
@@ -37,6 +51,7 @@ class Tutorial extends Phaser.Scene {
      this.bg_3.setOrigin(0, 0);
      // fixed it so it won't move when the camera moves.
     this.bg_3.setScrollFactor(0);
+    this.add.text(300,400, "PRESS R TO GO TO PLAYSCENE", textConfig);
         // creating player //////////////////////////////////////////////////////////////////////////
          //animation for player's ship
          this.anims.create({
@@ -53,23 +68,24 @@ class Tutorial extends Phaser.Scene {
            repeat: -1,
         });
         // Creating main character and adding to location x y
-        this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
+        this.player1 = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
         // adding physics to SR-71
-        this.physics.add.existing(this.player);
+        this.physics.add.existing(this.player1);
         // sets physics body
-        this.player.body.setSize(250,173,0,0);
+        this.player1.body.setSize(250,173,0,0);
         //player animation
-        this.player.anims.play('player',true);
+        this.player1.anims.play('player',true);
         // spacebar for shooting
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); 
         // bounded to screen
-        this.player.setCollideWorldBounds(true);
+        this.player1.setCollideWorldBounds(true);
         // define keyboard keys for movement
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         ////////////////////////////////////////////////////////////////////////////////////////
 
         // tells player how to move
@@ -86,6 +102,13 @@ class Tutorial extends Phaser.Scene {
     update(){
         // scrolls the background
         this.bg_3.tilePositionX += 0.2; 
+
+        if(Phaser.Input.Keyboard.JustDown(keyR)){
+            console.log("Loading playScene");
+            this.bgMusic.stop();
+            this.scene.start("playScene");
+        }
+
     }
 
 

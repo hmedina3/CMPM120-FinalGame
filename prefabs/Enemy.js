@@ -172,7 +172,11 @@ class Enemy extends Phaser.GameObjects.Sprite{
 
             //control shooting rate
             this.even += 1;
-            this.check = this.even%3;
+            if(this.scene.bossStage == true){
+                this.check = this.even%5;
+            }else{
+                this.check = this.even%25;
+            }
 
             //enemy shoots attack constantly while its alive
             if(this.check == 0 && this.isDead == false){ 

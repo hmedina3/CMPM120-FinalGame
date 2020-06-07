@@ -11,7 +11,7 @@ class Play extends Phaser.Scene {
         // SR-71 - main character
         this.load.spritesheet('SR-71','./assets/player1.png',{frameWidth: 250, frameheight: 173, startFrame: 0, endFrame: 1}); //https://opengameart.org/content/one-more-lpc-alternate-character
         // SR-71 upgrade sound effects
-        this.load.audio('scaleUpgrade', './assets/record004_mixdown.wav');
+        this.load.audio('scaleUpgrade', './assets/record006_mixdown.wav');
         this.load.audio('beamUpgrade', './assets/record005_mixdown.wav');
 
         //enemy
@@ -51,9 +51,15 @@ class Play extends Phaser.Scene {
         this.load.image('boss2','./assets/boss2big.png');
         this.load.image('boss3','./assets/boss3big.png');
         this.load.image('bossAttack','./assets/bosspower.png');
+
+        //asteroids
+        this.load.image('asteroid','./assets/asteroid.png');
     }
 
     create()  {
+
+        //tracking waves
+        this.wave=0;
 
         //player time score
         this.timer = game.settings.gameScore;
@@ -147,11 +153,58 @@ class Play extends Phaser.Scene {
         this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
         */
 
+        //spawm asteroids
+        this.asteroidGroup = this.physics.add.group();
+        this.howMany = Phaser.Math.Between(5,10);
+        for(let a = 0; a < this.howMany; a++){
+            let random = Math.random();
+            console.log('random: '+ random);
+            if( random <= 0.85){
+                this.size = Phaser.Math.Between(5,30);
+            }else{
+                this.size = Phaser.Math.Between(30,50);
+            }
+            let x = 0;
+            let y = 0;
+            switch(Phaser.Math.Between(0,4)){
+                case 0: //center area
+                        y = Phaser.Math.Between(game.config.height/2 - (game.config.height/2)/2, (game.config.height/2) + (game.config.height/2)/2 );
+                        x = Phaser.Math.Between(game.config.width/2 - (game.config.width/2)/2, (game.config.width/2) + (game.config.width/2)/2 );
+                    break;
+                case 1: //bottom right corner
+                        y = Phaser.Math.Between(game.config.height/2 + game.config.height/4, game.config.height);
+                        x = Phaser.Math.Between(game.config.width/2 + game.config.width/4 , game.config.width);
+                    break;
+                case 2: //bottom left corner
+                        y = Phaser.Math.Between(game.config.height/2 + game.config.height/4, game.config.height);
+                        x = Phaser.Math.Between(0, (game.config.width/4));
+                    break;
+                case 3: //top right corner
+                        y = Phaser.Math.Between(0, (game.config.height/4));
+                        x = Phaser.Math.Between(game.config.width/2 + game.config.width/4, game.config.width);
+                    break;
+                case 4: //top left corner
+                        y = Phaser.Math.Between(0, (game.config.height/4));
+                        x = Phaser.Math.Between(0, (game.config.width/4));
+                    break;
+            }
+            
+            this.asteroid = this.add.image(x,y,'asteroid').setScale(this.size/5,this.size/5);
+            this.physics.add.existing(this.asteroid);
+            this.asteroid.body.setSize(32,32);
+            this.asteroidGroup.add(this.asteroid);
+            console.log('x: '+ this.asteroid.x+ ' y: ' + this.asteroid.y);
+            console.log('size: '+ this.size);
+            console.log('how many: '+ this.howMany);
+        }
+
         //spawn enemies
         this.enemiesLeft = 0;
         this.theEnemies = this.physics.add.group();
-        // spawn enemy2
+        this.wave += 1;
         this.amount = Phaser.Math.Between(0,1);
+        // spawn enemy2
+        /*
         for( let i = 0; i<this.amount; i++){
             let y = -100;
             let x = 650;
@@ -189,6 +242,7 @@ class Play extends Phaser.Scene {
             this.theEnemies.add(this.enemy4);
             this.enemiesLeft += 1;
         }
+        */
         //spawn enemy3
         for( let i = 0; i<this.amount+1; i++){
             let y = -50;
@@ -228,6 +282,8 @@ class Play extends Phaser.Scene {
             this.theEnemies.add(this.enemy1);
             this.enemiesLeft += 1;
         }
+
+        console.log('enemies left = ' + this.enemiesLeft);
 
         /*
         //testig boss
@@ -269,7 +325,8 @@ class Play extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        //keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
+        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
         // create group to hold all our projectiles
         this.projectiles = this.add.group();
@@ -293,11 +350,14 @@ class Play extends Phaser.Scene {
     update() {
         
         //tracking time and game status
-        if(this.gameOver == false || this.gameWin == false){
+        if(this.gameOver == false && this.gameWin == false){
             this.timer += 0.04;
         }else{
             if(this.gameOver == true){
                 this.deathScene();
+            }
+            if(this.gameWin == true){
+                this.winScene();
             }
         }
 
@@ -312,7 +372,7 @@ class Play extends Phaser.Scene {
 
         // spacebar test
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
-            console.log("Firing for effect!");
+            //console.log("Firing for effect!");
             this.basicAttack();
         }
         // update all attacks
@@ -390,10 +450,46 @@ class Play extends Phaser.Scene {
             }
         }
 
+        //spawn boss
+        if(this.enemiesLeft <= 0 && this.wave == 3){
+
+            console.log('boss stage');
+
+            this.enemiesLeft = 1;
+            this.bossStage = true;
+            this.wave = 4;
+            
+            this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
+            this.physics.add.existing(this.boss);
+            this.boss.body.setCircle(270,183,188); //(radius, x offset, y offset)
+            //this.boss.setTexture('boss3');
+
+            //spawn enemy4
+            for( let i = 0; i<1; i++){
+                let y = -250;
+                let x = 750;
+                switch(Phaser.Math.Between(0,1)){
+                    case 0: y = Phaser.Math.Between(-50, -250);
+                            x = Phaser.Math.Between(700, 750);
+                        break;
+                    case 1: y = Phaser.Math.Between(650, 850);
+                            x = Phaser.Math.Between(700, 750);
+                        break;
+                }
+                this.enemy4 = new Enemy(this, x, y,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
+                this.physics.add.existing(this.enemy4);
+                this.enemy4.anims.play('enemy4',true);
+                this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
+                this.theEnemies.add(this.enemy4);
+                this.enemiesLeft += 1;
+            }
+        }
+
         //entering boss stage
-        if( this.bossStage == true){
+        if(this.bossStage == true){
 
             this.boss.update();
+            console.log('boss updates');
 
             //collision detection between player attck to boss
             for(let k = 0; k < this.projectiles.getChildren().length; k++){
@@ -401,7 +497,7 @@ class Play extends Phaser.Scene {
                 //if an enemy and a bullet/laser collide
                 if(this.physics.overlap(this.one,this.boss) == true){
                     //enemy health goes down
-                    this.boss.health -= 5;
+                    this.boss.health -= 3;
                     this.boss.setPercent(this.boss.health);
                     //bullet gets destroy
                     this.one.destroy();
@@ -414,7 +510,7 @@ class Play extends Phaser.Scene {
                         this.boss.laser3.destroy();
                         this.enemiesLeft -= 1;
                         this.boss.isDead = true;
-                        this.gameWin = true;
+                        //this.gameWin = true;
                     }
                 }
                 
@@ -436,6 +532,10 @@ class Play extends Phaser.Scene {
                 
             }
 
+            if(this.enemiesLeft==0){
+                this.gameWin = true;
+            }
+
             if(this.gameWin == true){
                 this.winScene();
             }
@@ -443,14 +543,102 @@ class Play extends Phaser.Scene {
         }
 
         
-        //spawn boss when enemies are all defeated
-        if(this.enemiesLeft <= 0){
-            this.enemiesLeft = 1;
-            this.bossStage = true;
-            this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
-            this.physics.add.existing(this.boss);
-            this.boss.body.setCircle(270,183,188); //(radius, x offset, y offset)
-            //this.boss.setTexture('boss3');
+
+        
+        //move to next wave when all enemies are destroyed
+        if(this.enemiesLeft <= 0 && this.wave < 3){
+
+            //spawn enemies
+            this.wave += 1;
+            
+            if(this.wave == 2 ){
+                this.amount = Phaser.Math.Between(1,2);
+                console.log('wave' + this.wave);
+            }
+
+            if(this.wave == 3){
+                this.amount = Phaser.Math.Between(2,3);
+                console.log('wave' + this.wave);
+            }
+
+            // spawn enemy2
+            for( let i = 0; i<this.amount; i++){
+                let y = -100;
+                let x = 650;
+                switch(Phaser.Math.Between(0,1)){
+                    case 0: y = Phaser.Math.Between(-50, -250);
+                            x = Phaser.Math.Between(600, 650);
+                        break;
+                    case 1: y = Phaser.Math.Between(650, 850);
+                            x = Phaser.Math.Between(600, 650);
+                        break;
+                }
+                this.enemy2 = new Enemy(this, x, y,'enemy2', 0,5).setScale(1,1).setOrigin(0,0);
+                this.physics.add.existing(this.enemy2);
+                this.enemy2.anims.play('enemy2',true);
+                this.enemy2.body.setSize(87,65,0,0);// (x,y,[center])
+                this.theEnemies.add(this.enemy2);
+                this.enemiesLeft += 1;
+            }
+            //spawn enemy4
+            for( let i = 0; i<this.amount; i++){
+                let y = -250;
+                let x = 750;
+                switch(Phaser.Math.Between(0,1)){
+                    case 0: y = Phaser.Math.Between(-50, -250);
+                            x = Phaser.Math.Between(700, 750);
+                        break;
+                    case 1: y = Phaser.Math.Between(650, 850);
+                            x = Phaser.Math.Between(700, 750);
+                        break;
+                }
+                this.enemy4 = new Enemy(this, x, y,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
+                this.physics.add.existing(this.enemy4);
+                this.enemy4.anims.play('enemy4',true);
+                this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
+                this.theEnemies.add(this.enemy4);
+                this.enemiesLeft += 1;
+            }
+            //spawn enemy3
+            for( let i = 0; i<this.amount+1; i++){
+                let y = -50;
+                let x = 700;
+                switch(Phaser.Math.Between(0,1)){
+                    case 0: y = Phaser.Math.Between(-50, -250);
+                            x = Phaser.Math.Between(650, 700);
+                        break;
+                    case 1: y = Phaser.Math.Between(650, 850);
+                            x = Phaser.Math.Between(650, 700);
+                        break;
+                }
+                this.enemy3 = new Enemy(this, x, y,'enemy3', 0,15).setScale(1,1).setOrigin(0,0);
+                this.physics.add.existing(this.enemy3);
+                this.enemy3.anims.play('enemy3',true);
+                this.enemy3.body.setSize(87,65,0,0);// (x,y,[center])
+                this.theEnemies.add(this.enemy3);
+                this.enemiesLeft += 1;
+            }
+
+            //spawn enemy1
+            for( let i = 0; i<this.amount+2; i++){
+                let y = -200;
+                let x = 550;
+                switch(Phaser.Math.Between(0,1)){
+                    case 0: y = Phaser.Math.Between(-50, -250);
+                            x = Phaser.Math.Between(500, 550);
+                        break;
+                    case 1: y = Phaser.Math.Between(650, 850);
+                            x = Phaser.Math.Between(500, 550);
+                        break;
+                }
+                this.enemy1 = new Enemy(this, x, y,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
+                this.physics.add.existing(this.enemy1);
+                this.enemy1.anims.play('enemy1',true);
+                this.enemy1.body.setSize(98,70,0,0);// (x,y,[center])
+                this.theEnemies.add(this.enemy1);
+                this.enemiesLeft += 1;
+            }
+            
         }
 
   
@@ -467,6 +655,10 @@ class Play extends Phaser.Scene {
             this.update.update();
         }
 
+        if(this.winScene == false){
+            this.stopHealth = game.settings.gameHealth;
+        }
+
     } // end of update function. 
 
     basicAttack(){
@@ -480,28 +672,29 @@ class Play extends Phaser.Scene {
             this.health.setPercent(0);
             game.settings.gameHealth = 0;
 
-            //prevent time from increasing
-            this.timer == this.timer;
-
             //stop music
             this.bgMusic.stop();
 
             //display message
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/3 + 50, 'Survival Time: ' + Math.floor(this.timer) ,highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
 
             // check for input during death scene
-            if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+            if(Phaser.Input.Keyboard.JustDown(keyS)){
+                console.log('restart');
+                this.bossStage = false;
                 game.settings.gameScore = 0;
                 game.settings.gameHealth = 100;
                 music.stop();
-                this.scene.restart();
+                //this.scene.restart();
                 //this.scene.start('playScene');
+                this.scene.start('tutorialScene');
             }
-            if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+            if(Phaser.Input.Keyboard.JustDown(keyM)){
                 music.stop();
                 this.scene.start('menuScene');
+
             }
         }
     }
@@ -519,27 +712,25 @@ class Play extends Phaser.Scene {
             }
 
             //prevent health bar from increasing
-            const stop2 = game.settings.gameHealth
-            game.settings.gameHealth = stop2;
-            this.health.setPercent(stop2);
-
-            //prevent time from increasing
-            const stop = this.timer;
-            this.timer = stop;
+            game.settings.gameHealth = this.stopHealth;
+            this.health.setPercent(game.settings.gameHealth);
 
             this.bgMusic.stop();
             this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 50, '← to Restart or → for Menu', deathConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
 
             // check for input during end scene
-            if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+            if(Phaser.Input.Keyboard.JustDown(keyS)){
                 this.scene.restart(this.p1Score);
+                this.bossStage = false;
+                this.gameWin = false;
                 game.settings.gameScore = 0;
                 this.bgMusic.stop();
-                this.scene.restart();
+                //this.scene.restart();
+                this.scene.start('tutorialScene');
             }
-            if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+            if(Phaser.Input.Keyboard.JustDown(keyM)){
                 this.scene.start('menuScene');
                 this.bgMusic.stop();
             }

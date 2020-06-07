@@ -69,7 +69,7 @@ let deathConfig = {
 
 
   // reserve keyboard vars
-let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN;
+let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyM, keyS;
 
 let game = new Phaser.Game(config);
 

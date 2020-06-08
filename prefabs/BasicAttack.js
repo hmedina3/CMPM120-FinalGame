@@ -1,4 +1,5 @@
 class BasicAttack extends Phaser.GameObjects.Sprite{
+    
     constructor(scene){
         var x = scene.player.x + 100;
         var y = scene.player.y + 50;

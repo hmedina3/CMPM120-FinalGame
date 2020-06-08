@@ -11,6 +11,8 @@ class Play extends Phaser.Scene {
         // SR-71 - main character
         this.load.spritesheet('SR-71','./assets/player1.png',{frameWidth: 250, frameheight: 173, startFrame: 0, endFrame: 1}); //https://opengameart.org/content/one-more-lpc-alternate-character
         // SR-71 upgrade sound effects
+        // Sound effect obtained from https://www.zapsplat.com
+        this.load.audio('attack', './assets/sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13.mp3');
         this.load.audio('scaleUpgrade', './assets/record006_mixdown.wav');
         this.load.audio('beamUpgrade', './assets/record005_mixdown.wav');
 
@@ -20,7 +22,9 @@ class Play extends Phaser.Scene {
         this.load.spritesheet('enemy3','./assets/enemy3.png',{frameWidth: 106, frameheight: 58, startFrame: 0, endFrame: 1});
         this.load.spritesheet('enemy4','./assets/enemy4.png',{frameWidth: 79, frameheight: 47, startFrame: 0, endFrame: 1});
 
-        //load sound effect?
+        //load sound effect
+        this.load.audio('tangos', './assets/record007_mixdown.wav');
+
         //this.load.audio('sfx_power', './assets/powerup.wav'); //https://freesound.org/people/evan.schad/sounds/470768/
         this.load.audio('sfx_laser1', './assets/35684__jobro__laser7.wav'); //https://freesound.org/people/jobro/sounds/35684/ 
         this.load.audio('sfx_laser2', './assets/341236__sharesynth__laser00.wav'); //https://freesound.org/people/sharesynth/sounds/341236/
@@ -59,17 +63,19 @@ class Play extends Phaser.Scene {
     create()  {
 
         //tracking waves
-        this.wave=0;
+        this.wave = 0;
 
         //player time score
         this.timer = game.settings.gameScore;
+        // intro-sound
+        this.sound.play('tangos');
 
         //place background
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0.0);
 
         // background music
         if(bgMusicPlaying == false){
-        this.bgMusic = this.sound.add('sfx_music_2', { loop: true });
+        this.bgMusic = this.sound.add('sfx_music_2', { delay: 5, loop: true});
         this.bgMusic.play(music);
         bgMusicPlaying = true;
         }
@@ -368,7 +374,7 @@ class Play extends Phaser.Scene {
  
         
         // moves background
-        this.background.tilePositionX += 0.2;
+        this.background.tilePositionX += 0.4;
 
         // spacebar test
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
@@ -663,6 +669,7 @@ class Play extends Phaser.Scene {
 
     basicAttack(){
       var attack = new BasicAttack(this);
+      this.sound.play('attack',{volume: 0.5});
     }
     
     //death Scene

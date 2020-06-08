@@ -67,6 +67,7 @@ class Play extends Phaser.Scene {
 
         //player time score
         this.timer = game.settings.gameScore;
+
         // intro-sound
         this.sound.play('tangos');
 
@@ -159,7 +160,7 @@ class Play extends Phaser.Scene {
         this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
         */
 
-        //spawm asteroids
+        // spawm asteroids
         this.asteroidGroup = this.physics.add.group();
         this.howMany = Phaser.Math.Between(5,10);
         for(let a = 0; a < this.howMany; a++){
@@ -331,7 +332,7 @@ class Play extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
         // create group to hold all our projectiles
@@ -352,20 +353,23 @@ class Play extends Phaser.Scene {
         
 
     }   // end of create function
-   
+
+   /**********************************************************************************************************/
     update() {
         
-        //tracking time and game status
+        // tracking time and game status
         if(this.gameOver == false && this.gameWin == false){
             this.timer += 0.04;
-        }else{
-            if(this.gameOver == true){
-                this.deathScene();
+        }
+        else if(this.gameOver == true){
+             // stop music
+             this.bgMusic.stop();
+            this.scene.start("deathScene");
             }
-            if(this.gameWin == true){
+        else if(this.gameWin == true){
                 this.winScene();
             }
-        }
+        
 
         //display time
         this.showTime = this.add.text(490,33,'Time: ' + Math.floor(this.timer), scoreConfig);
@@ -426,10 +430,9 @@ class Play extends Phaser.Scene {
                         game.settings.gameHealth -= 2;
                         this.health.setPercent(game.settings.gameHealth)
 
-                        // move to death scene if health bar is 0
+                        // move to death scene if health bar is 0////////////////////////////////////////////////////////////////////////////
                         if(game.settings.gameHealth <= 0){
-                            this.gameOver = true; 
-                            this.deathScene();                
+                            this.gameOver = true;                
                         }
                     }
                 }
@@ -450,7 +453,6 @@ class Play extends Phaser.Scene {
                     // move to death scene if health bar is 0
                     if(game.settings.gameHealth <= 0){
                         this.gameOver = true;
-                        this.deathScene();
                     }
                 }
             }
@@ -533,12 +535,11 @@ class Play extends Phaser.Scene {
                 // move to death scene if health bar is 0
                 if(game.settings.gameHealth <= 0){
                     this.gameOver = true;
-                    this.deathScene();
                 }
                 
             }
 
-            if(this.enemiesLeft==0){
+            if(this.enemiesLeft == 0 ){
                 this.gameWin = true;
             }
 
@@ -548,9 +549,6 @@ class Play extends Phaser.Scene {
 
         }
 
-        
-
-        
         //move to next wave when all enemies are destroyed
         if(this.enemiesLeft <= 0 && this.wave < 3){
 
@@ -672,42 +670,9 @@ class Play extends Phaser.Scene {
       this.sound.play('attack',{volume: 0.5});
     }
     
-    //death Scene
-    deathScene(){
-        if(this.gameOver == true){
-            //prevent health bar from increasing
-            this.health.setPercent(0);
-            game.settings.gameHealth = 0;
-
-            //stop music
-            this.bgMusic.stop();
-
-            //display message
-            this.add.text(game.config.width/2, game.config.height/4 + 50, 'YOU DIED',highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/3 + 50, 'Survival Time: ' + Math.floor(this.timer) ,highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
-
-            // check for input during death scene
-            if(Phaser.Input.Keyboard.JustDown(keyS)){
-                console.log('restart');
-                this.bossStage = false;
-                game.settings.gameScore = 0;
-                game.settings.gameHealth = 100;
-                music.stop();
-                //this.scene.restart();
-                //this.scene.start('playScene');
-                this.scene.start('tutorialScene');
-            }
-            if(Phaser.Input.Keyboard.JustDown(keyM)){
-                music.stop();
-                this.scene.start('menuScene');
-
-            }
-        }
-    }
-
-    //win scene
+    // win scene
     winScene(){
+
         // when the player beats the boss level, go to win scene
         if(this.gameWin == true){
             //tracking shortest time
@@ -723,12 +688,12 @@ class Play extends Phaser.Scene {
             this.health.setPercent(game.settings.gameHealth);
 
             this.bgMusic.stop();
-            this.add.text(game.config.width/2, game.config.height/6 + 50, 'YOU WIN!',highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/6 + 50, 'Project Ezekiel was a sucess! Congratulations!',highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
 
             // check for input during end scene
-            if(Phaser.Input.Keyboard.JustDown(keyS)){
+            if(Phaser.Input.Keyboard.JustDown(keyR)){
                 this.scene.restart(this.p1Score);
                 this.bossStage = false;
                 this.gameWin = false;
@@ -744,4 +709,4 @@ class Play extends Phaser.Scene {
         
         }
     }
-}
+} // end of play class

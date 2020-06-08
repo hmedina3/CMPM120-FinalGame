@@ -111,8 +111,8 @@ class Tutorial extends Phaser.Scene {
         this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT); 
         this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP); 
         this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        // 135-seconds
-       game.settings.gameTimer = 135000;
+        // 140-seconds
+       game.settings.gameTimer = 140000;
       this.timer = this.formatTime(game.settings.gameTimer);
     }
 
@@ -161,7 +161,7 @@ class Tutorial extends Phaser.Scene {
             this.sound.play('message3', {delay: 3});
             this.counter += 1;
             // last message to player
-            if(this.sound.play('message6', {volume: 2, delay: 19})){
+            if(this.sound.play('message6', {volume: 2, delay: 18})){
                 console.log("Loading playScene");
                let timeInSeconds = this.time.addEvent({delay:1000, callback: this.onEvent, callbackScope: this, loop:true});
             }

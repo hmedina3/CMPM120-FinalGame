@@ -12,7 +12,7 @@ let config = {
     type: Phaser.AUTO,
     width: 800, //640
     height: 600, //480
-    scene: [Menu, Options, Credits, Tutorial, Play],
+    scene: [Menu, Options, Credits, Tutorial, Death, Play],
     physics: {
       default: 'arcade',
       arcade: {
@@ -69,7 +69,7 @@ let deathConfig = {
 
 
   // reserve keyboard vars
-let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyM, keyS;
+let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyM;
 
 let game = new Phaser.Game(config);
 

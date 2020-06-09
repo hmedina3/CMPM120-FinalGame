@@ -12,11 +12,31 @@ class Play extends Phaser.Scene {
         
         // SR-71 - main character
         this.load.spritesheet('SR-71','./assets/player1.png',{frameWidth: 250, frameheight: 173, startFrame: 0, endFrame: 1}); //https://opengameart.org/content/one-more-lpc-alternate-character
-        // SR-71 upgrade sound effects
+        
+
+        // SR-71 upgrade assets
         // Sound effect obtained from https://www.zapsplat.com
         this.load.audio('attack', './assets/sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13.mp3');
-        this.load.audio('scaleUpgrade', './assets/record006_mixdown.wav');
-        this.load.audio('beamUpgrade', './assets/record005_mixdown.wav');
+       
+        /***Slash Upgrade Assets***/
+        this.load.audio('scaleUpgrade!', './assets/record006_mixdown.wav');
+        // Sound effect obtained from https://www.zapsplat.com
+        this.load.audio('scaleUpgradeSound','assets\zapsplat_science_fiction_laser_hypnotic_zap_25803.mp3');
+        // Mandatory: Credit "Matheus de Carvalho Oliveira" or "Matheus Carvalho"
+        this.load.spritesheet('scaleUpgrade','./assets/AirSlash.png');
+        /*******************/
+
+        /***Beam Upgrade Assets***/
+        // announcement
+        this.load.audio('beamUpgrade!', './assets/record005_mixdown.wav');
+         // Sound effect obtained from https://www.zapsplat.com
+        this.load.audio('beamUpgradeSound', './assets/zapsplat_science_fiction_beam_lightly_rising_44803.mp3');
+        this.load.spritesheet('beamUpgrade','./assets/beamUpgrade.png');
+        /************************/
+
+         //icons for power-ups
+         this.load.spritesheet('scaleUpgradeIcon','./assets/power2.png');
+         this.load.spritesheet('beamUpgradeIcon','./assets/power1.png');
 
         //enemy
         this.load.spritesheet('enemy','./assets/4_fighters_sprites.png',{frameWidth: 98, frameheight: 72, startFrame: 0, endFrame: 1}); //http://freegameassets.blogspot.com/2015/02/space-patrol-sprite-sheet-this-space.html
@@ -36,8 +56,6 @@ class Play extends Phaser.Scene {
         this.load.image('lasers','./assets/spr_bullet_strip02.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
         this.load.image('yellow_lasers','./assets/laser2.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets 
 
-        //icons for power-ups
-
         //background picture
         this.load.image('background','./assets/Space-Background-4.jpg');
 
@@ -52,6 +70,7 @@ class Play extends Phaser.Scene {
         this.load.image('enemyHealth','./assets/enemyhealthbar.png');
 
         //boss sprite
+        //  Skorpio ( http://opengameart.org/users/skorpio )  new boss sprite? large-ship.png
         this.load.spritesheet('boss','./assets/bossbig.png', {frameWidth: 885, frameheight: 749, startFrame: 0, endFrame: 2});
         this.load.image('boss1','./assets/boss1big.png');
         this.load.image('boss2','./assets/boss2big.png');
@@ -207,7 +226,7 @@ class Play extends Phaser.Scene {
             console.log('how many: '+ this.howMany);
         }
 
-        //spawn enemies
+        // spawn enemies
         this.enemiesLeft = 0;
         this.theEnemies = this.physics.add.group();
         this.wave += 1;
@@ -404,7 +423,7 @@ class Play extends Phaser.Scene {
                 this.opponent = this.theEnemies.getChildren()[j];
                 //if an enemy and a bullet/laser collide
                 if(this.physics.overlap(this.one,this.opponent) == true){
-                    //enemy health goes down
+                    //enemy health goes down - 10
                     this.opponent.health -= 10;
                     this.opponent.setPercent(this.opponent.health);
                     //bullet gets destroy
@@ -444,13 +463,14 @@ class Play extends Phaser.Scene {
             }
             else{ //for enemy 1, enemy 2, enemy 3 's atacks
                 if(this.physics.overlap(this.player,this.one.laser) == true){
-                    if(this.one.speed != 5){ //destroy all red laser
+                    if(this.one.speed != 5){ 
+                        // destroy all red lasers - 10
                         this.one.laser.destroy();
-                        game.settings.gameHealth -= 10;
+                        game.settings.gameHealth -= 2;
                         this.health.setPercent(game.settings.gameHealth)
 
-                    }else{ //for yellow laser
-                        game.settings.gameHealth -= 3;
+                    }else{ //for yellow laser = 3
+                        game.settings.gameHealth -= 0.1;
                         this.health.setPercent(game.settings.gameHealth)
 
                     }
@@ -713,5 +733,5 @@ class Play extends Phaser.Scene {
         
         }
     }
-    
+
 } // end of play class

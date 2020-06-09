@@ -1,3 +1,4 @@
+
 class Play extends Phaser.Scene {
      
     constructor() {
@@ -360,14 +361,15 @@ class Play extends Phaser.Scene {
         
         // tracking time and game status
         if(this.gameOver == false && this.gameWin == false){
-            //this.timer += 0.04;
+            this.timer += 0.04;
         }
         else if(this.gameOver == true){
              // stop music
              this.bgMusic.stop();
+             // deletes playScene
              this.scene.remove("playScene");
-        //this.scene.stop("playScene");  
-           this.scene.start("deathScene"); 
+             // starts deathScene  
+             this.scene.start("deathScene"); 
             }
         else if(this.gameWin == true){
                 this.winScene();
@@ -375,9 +377,9 @@ class Play extends Phaser.Scene {
         
 
         //display time
-     //   this.showTime = this.add.text(490,33,'Time: ' + Math.floor(this.timer), scoreConfig);
+     this.showTime = this.add.text(490,33,'Time: ' + Math.floor(this.timer), scoreConfig);
 
-       // this.shortestTime = localStorage.getItem("high-score");
+       this.shortestTime = localStorage.getItem("high-score");
  
         
         // moves background
@@ -691,9 +693,9 @@ class Play extends Phaser.Scene {
             this.health.setPercent(game.settings.gameHealth);
 
             this.bgMusic.stop();
-         //   this.add.text(game.config.width/2, game.config.height/6 + 50, 'Project Ezekiel was a sucess! Congratulations!',highScoreConfig).setOrigin(0.5);
-       //     this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
-        //    this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/6 + 50, 'Project Ezekiel was a sucess! Congratulations!',highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
 
             // check for input during end scene
             if(Phaser.Input.Keyboard.JustDown(keyR)){
@@ -711,4 +713,5 @@ class Play extends Phaser.Scene {
         
         }
     }
+    
 } // end of play class

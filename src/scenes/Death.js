@@ -1,9 +1,11 @@
+
 class Death extends Phaser.Scene {
      
     constructor() {
         super("deathScene");
 
     }
+
     preload(){
          // background
          this.load.image('background_4','./assets/Space-Background-4.png');
@@ -60,6 +62,8 @@ class Death extends Phaser.Scene {
     this.bg_4.setScrollFactor(0);
 
     
+  //  this.scene.add("playScene", playScene, true);
+
         // define keyboard keys
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
@@ -80,8 +84,14 @@ class Death extends Phaser.Scene {
          this.bg_4.tilePositionX += 0.2; 
          // check for input during death scene
          if(Phaser.Input.Keyboard.JustDown(keyR)){
+             
             console.log("Loading playScene");
-            this.scene.start("tutorialScene");
+            // creating scene dynamically
+            import(/* webpackChunkName: "playScene" */ './Play.js').then(playScene => {
+                this.scene.add('playScene', playScene.default, true)
+              });
+
+            this.scene.start("playScene");
            //this.scene.switch("deathScene","playScene");
             //this.scene.start("menuScene");
         }

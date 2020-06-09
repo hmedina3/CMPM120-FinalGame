@@ -5,7 +5,7 @@ class Menu extends Phaser.Scene {
     }
  
     preload() {            
-        
+      
         // Menu music -  Music: https://www.bensound.com
         this.load.audio('sfx_music', './assets/bensound-birthofahero.mp3');
         
@@ -117,8 +117,8 @@ class Menu extends Phaser.Scene {
        this.sound.play('sfx_select');
        this.bgMusic.stop();
        this.enterButtonHoverState();
+       this.scene.start("preloaderScene");
        this.scene.start("tutorialScene");
-      
    });
 
       // options button

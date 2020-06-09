@@ -15,7 +15,7 @@ class Death extends Phaser.Scene {
     }
 
     create(){
-       
+
         /*
          //prevent health bar from increasing
          this.health.setPercent(0);
@@ -65,18 +65,24 @@ class Death extends Phaser.Scene {
 
          // timer for song - 14-seconds
        game.settings.gameTimer = 12000;
-       this.timer = this.formatTime(game.settings.gameTimer);
+       this.timer = this.formatTime(game.settings.gameTimer);  
     let timeInSeconds = this.time.addEvent({delay:1000, callback: this.onEvent, callbackScope: this, loop:true});
+    
+    
+
 
 
     }
+
     update(){
+    
          // scrolls the background
          this.bg_4.tilePositionX += 0.2; 
          // check for input during death scene
          if(Phaser.Input.Keyboard.JustDown(keyR)){
             console.log("Loading playScene");
-            this.scene.start("playScene");
+            this.scene.start("tutorialScene");
+           //this.scene.switch("deathScene","playScene");
             //this.scene.start("menuScene");
         }
     }
@@ -95,7 +101,7 @@ class Death extends Phaser.Scene {
             this.bgMusic.stop();
         }
     }
-
+    
 
 
 }

@@ -2,24 +2,24 @@
 Hector Medina
 Yongshi Sun
 
-Game title: ?
-Date completed: pending...
+Game title: Project Ezekiel
+Date completed: 6/8/2020
 
 */
-//import AudioManager from './AudioManager'
 
 let config = {
     type: Phaser.AUTO,
     width: 800, //640
     height: 600, //480
-    scene: [Menu, Options, Credits, Tutorial, Death, Play],
+    scene: [ Menu, Preloader, Play, Options, Credits, Tutorial, Death],
     physics: {
       default: 'arcade',
       arcade: {
-        debug: true //debug put boxes over your objects w/ physics and velocity
+        debug: false //debug put boxes over your objects w/ physics and velocity
       }
     }
 }
+
 // global music variables 
 let bgMusicPlaying = false;
 let music = null;
@@ -72,6 +72,7 @@ let deathConfig = {
 let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyM;
 
 let game = new Phaser.Game(config);
+
 
 
 // define game settings

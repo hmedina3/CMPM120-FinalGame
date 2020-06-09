@@ -5,6 +5,7 @@ class Tutorial extends Phaser.Scene {
 
     }
     preload(){
+      
          // background
          this.load.image('background_3','./assets/Space-Background-4.png');
         // voice commands
@@ -20,12 +21,11 @@ class Tutorial extends Phaser.Scene {
         this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 39, frameheight: 39, startFrame: 0, endFrame: 20});
         // Sound effect obtained from https://www.zapsplat.com
         this.load.audio('attack', './assets/sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13.mp3');
-        // sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13
-        // zapsplat_multimedia_game_retro_laser_repeat_level_complete_004_25906.mp3
-
+       
     }
 
     create(){
+        
 
         // added this code for debugging purposes
         let textConfig = {
@@ -50,6 +50,7 @@ class Tutorial extends Phaser.Scene {
         // background picture
          // This will make the background move as a parallax scroller.
      this.bg_3= this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background_3');
+     //this.bg_3 = this.physics.add.image(0, 0, game.config.width, game.config.height, 'background_3');
      // SetScale()
      this.bg_3.setScale(1);
      // Set its pivot to the top left corner
@@ -111,14 +112,17 @@ class Tutorial extends Phaser.Scene {
         this.left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT); 
         this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP); 
         this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        // 140-seconds
-       game.settings.gameTimer = 140000;
+        // 140-seconds 140000
+       game.settings.gameTimer = 30000;
       this.timer = this.formatTime(game.settings.gameTimer);
     }
 
     update(){
+       
+        
         // scrolls the background
         this.bg_3.tilePositionX += 0.2; 
+      //  this.physics.world.collide(this.bg_3 , this.player);
        
 /***************************************************** 
         if(Phaser.Input.Keyboard.JustDown(keyR)){
@@ -197,6 +201,7 @@ class Tutorial extends Phaser.Scene {
             this.scene.start("playScene");
         }
     }
+
 
 
 } // end of tutorial scene.

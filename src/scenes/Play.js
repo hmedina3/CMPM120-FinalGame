@@ -391,7 +391,8 @@ class Play extends Phaser.Scene {
              this.scene.start("deathScene"); 
             }
         else if(this.gameWin == true){
-                this.winScene();
+                //this.winScene();
+                this.scene.start("winScene");
             }
         
 

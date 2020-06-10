@@ -73,7 +73,7 @@ let keyR, keySPACE, keyLEFT, keyRIGHT, keyUP, keyDOWN, keyM;
 
 let game = new Phaser.Game(config);
 
-let globalNum = 0;
+
 
 // define game settings
 game.settings = {

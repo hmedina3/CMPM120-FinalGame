@@ -87,9 +87,10 @@ class Win extends Phaser.Scene {
 
         if(Phaser.Input.Keyboard.JustDown(keyM)){
             this.bgMusic.stop();
-             globalNum = 1;
-             this.scene.remove("preloaderScene");
+            // global count?
+            this.scene.start("preloaderScene");
             this.scene.start("menuScene");
+
         }
 
     }

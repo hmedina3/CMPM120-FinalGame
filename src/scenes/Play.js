@@ -89,13 +89,13 @@ class Play extends Phaser.Scene {
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0.0);
 
         // background music
-        if(bgMusicPlaying == false){
+        if(this.bgMusicPlaying == false){
         this.bgMusic = this.sound.add('sfx_music_2', { delay: 5, loop: true});
         this.bgMusic.play(music);
-        bgMusicPlaying = true;
+        this.bgMusicPlaying = true;
         }
 
-          // basic attack anims
+        // basic attack anims
         this.anims.create({
             key: 'base',
             frames: this.anims.generateFrameNumbers('basicAttack',{start:0, end: 2, first: 0}),
@@ -146,7 +146,7 @@ class Play extends Phaser.Scene {
         this.howMany = Phaser.Math.Between(5,10);
         for(let a = 0; a < this.howMany; a++){
             let random = Math.random();
-            console.log('random: '+ random);
+            //console.log('random: '+ random);
             if( random <= 0.85){
                 this.size = Phaser.Math.Between(5,30);
             }else{
@@ -181,9 +181,9 @@ class Play extends Phaser.Scene {
             this.physics.add.existing(this.asteroid);
             this.asteroid.body.setSize(32,32);
             this.asteroidGroup.add(this.asteroid);
-            console.log('x: '+ this.asteroid.x+ ' y: ' + this.asteroid.y);
-            console.log('size: '+ this.size);
-            console.log('how many: '+ this.howMany);
+            //console.log('x: '+ this.asteroid.x+ ' y: ' + this.asteroid.y);
+            //console.log('size: '+ this.size);
+            //console.log('how many: '+ this.howMany);
         }
 
         // spawn enemies
@@ -271,7 +271,7 @@ class Play extends Phaser.Scene {
             this.enemiesLeft += 1;
         }
 
-        console.log('enemies left = ' + this.enemiesLeft);
+        //console.log('enemies left = ' + this.enemiesLeft);
 
         //putting all lasers into a group for enemy4's attacks
         this.enemy4Laser = this.physics.add.group();
@@ -327,6 +327,8 @@ class Play extends Phaser.Scene {
 
    /**********************************************************************************************************/
     update() {
+
+        //console.log('gameWin= '+ this.gameWin);
         
         // tracking time and game status
         if(this.gameOver == false && this.gameWin == false){
@@ -334,12 +336,15 @@ class Play extends Phaser.Scene {
         }
         else if(this.gameOver == true){
              // stop music
-             this.bgMusic.stop();
+             if(this.bgMusicPlaying == true){
+                 this.bgMusic.stop();
+             }
              // starts deathScene  
              this.scene.start("deathScene"); 
             }
         else if(this.gameWin == true){
                 this.scene.start("bossScene");
+                //this.scene.start('winScene');
             }
         
 
@@ -424,7 +429,7 @@ class Play extends Phaser.Scene {
                 for(let j = 0; j < this.enemy4Laser.getChildren().length; j++){
                     this.attack = this.enemy4Laser.getChildren()[j];
                     if(this.physics.overlap(this.player,this.attack) == true){
-                            this.one.laser.destroy();
+                            //this.one.laser.destroy();
                             this.attack.destroy(); 
                         game.settings.gameHealth -= 1;
                         this.health.setPercent(game.settings.gameHealth)
@@ -459,11 +464,16 @@ class Play extends Phaser.Scene {
         } // end of collison for-loop projectiles
         
         // starts boss scene
-        if(this.enemiesLeft <= 0 && this.wave == 4){
-            this.gameWin = true;    
+        if(this.enemiesLeft <= 0 && this.wave == 3){
+            this.wave = 4;
+            console.log('wave:'+ this.wave);
+            this.gameWin = true; 
+            this.scene.start("bossScene");   
         }
         // last wave
-        if(this.enemiesLeft <= 0 && this.wave == 3){
+        /*
+        if(this.enemiesLeft <= 0 && this.wave == 4){
+            console.log('wave= ' + this.wave);
 
             this.enemiesLeft = 1;
             this.wave = 4;
@@ -487,22 +497,23 @@ class Play extends Phaser.Scene {
                 this.theEnemies.add(this.enemy4);
                 this.enemiesLeft += 1;
             }
-        }
+        }*/
 
         // move to next wave when all enemies are destroyed
         if(this.enemiesLeft <= 0 && this.wave < 3){
 
             //spawn enemies
             this.wave += 1;
+            console.log('wave' + this.wave);
             
             if(this.wave == 2 ){
                 this.amount = Phaser.Math.Between(1,2);
-                console.log('wave' + this.wave);
+                
             }
 
             if(this.wave == 3){
                 this.amount = Phaser.Math.Between(2,3);
-                console.log('wave' + this.wave);
+
             }
 
             // spawn enemy2
@@ -610,7 +621,7 @@ class Play extends Phaser.Scene {
         // upgrade is timed.
         if(this.myTimer2 > 0){
             this.myTimer2 -= 1;
-            console.log(this.myTimer2);
+            //console.log(this.myTimer2);
         }
         else{
             this.isScaled = false;
@@ -622,7 +633,7 @@ class Play extends Phaser.Scene {
 
          if(this.myTimer > 0){
             this.myTimer -= 1;
-            console.log(this.myTimer);
+            //console.log(this.myTimer);
             this.myCounter = 1;
          }
          else{

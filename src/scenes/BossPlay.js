@@ -50,6 +50,8 @@ class BossPlay extends Phaser.Scene {
         this.load.image('bossAttack','./assets/bosspower.png');
         /***********************/
 
+        //laser
+        this.load.image('lasers','./assets/spr_bullet_strip02.png'); //https://opengameart.org/content/sci-fi-space-simple-bullets
 
         //asteroids
        this.load.image('asteroid','./assets/asteroid.png');
@@ -147,10 +149,11 @@ class BossPlay extends Phaser.Scene {
          
 
          // create group to hold all our projectiles********
-            this.projectiles = this.add.group();
+        this.projectiles = this.add.group();
+        this.enemy4Laser = this.add.group();
         
         
-            // Power-ups
+         // Power-ups
          // create group to hold all our projectiles********
          this.projectiles = this.add.group();
 
@@ -170,15 +173,44 @@ class BossPlay extends Phaser.Scene {
         game.settings.gameHealth = 100;
         this.health.setPercent(game.settings.gameHealth);
 
+        this.enemiesLeft = 0;
+
         // Spawn Boss
         this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
         this.physics.add.existing(this.boss);
         this.boss.body.setCircle(50,230,355); //(radius, x offset, y offset)
         this.bossLaser = this.physics.add.group();
-        
+        this.enemiesLeft += 1;
+
+        this.bossStage = true;
+        this.wave = 4;
+
+        //spawn enemy4
+        for( let i = 0; i<1; i++){
+            let y = -250;
+            let x = 750;
+            switch(Phaser.Math.Between(0,1)){
+                case 0: y = Phaser.Math.Between(-50, -250);
+                        x = Phaser.Math.Between(700, 750);
+                    break;
+                case 1: y = Phaser.Math.Between(650, 850);
+                        x = Phaser.Math.Between(700, 750);
+                    break;
+            }
+            this.enemy4 = new Enemy(this, x, y,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
+            this.physics.add.existing(this.enemy4);
+            this.enemy4.anims.play('enemy4',true);
+            this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
+            //this.theEnemies.add(this.enemy4);
+            this.enemiesLeft += 1;
+            this.enemy4.bossStage = true;
+            console.log('x: '+ this.enemy4.x+ ' y: ' + this.enemy4.y);
+            console.log('enemies left:'+ this.enemiesLeft);
+        }
 
         this.gameOver = false;
         this.gameWin = false;
+        
 
 
     } // end of create function
@@ -215,6 +247,42 @@ class BossPlay extends Phaser.Scene {
             }
         }
 
+        //for enemy 4's attacks
+        for(let j = 0; j < this.enemy4Laser.getChildren().length; j++){
+            this.attack = this.enemy4Laser.getChildren()[j];
+            if(this.physics.overlap(this.player,this.attack) == true){
+                this.attack.destroy(); 
+                game.settings.gameHealth -= 1;
+                this.health.setPercent(game.settings.gameHealth);
+
+                // move to death scene if health bar is 0////////////////////////////////////////////////////////////////////////////
+                if(game.settings.gameHealth <= 0){
+                    this.gameOver = true;                
+                }
+            }
+        }
+
+        // collision detection between Player attack to enemy4
+        for(let k = 0; k < this.projectiles.getChildren().length; k++){
+
+            this.one = this.projectiles.getChildren()[k];
+            // if an enemy and a laser collide
+            if(this.physics.overlap(this.one,this.enemy4) == true){
+                // enemy health goes down
+                this.enemy4.health -= 10;
+                this.enemy4.setPercent(this.enemy4.health);
+                // laser gets destroy
+                this.one.destroy();
+                // if enemy runs out of health, they die
+                if(this.enemy4.health <= 0){
+                    this.enemy4.destroy();
+                    this.enemy4.bar.destroy();
+                    this.enemiesLeft -= 1;
+                    this.enemy4.isDead = true;
+                }
+            }
+        }
+
         // spacebar to fire
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
         
@@ -233,6 +301,7 @@ class BossPlay extends Phaser.Scene {
 
 
         this.boss.update();
+        this.enemy4.update();
 
         // collision detection between Player attack to Boss
         for(let k = 0; k < this.projectiles.getChildren().length; k++){

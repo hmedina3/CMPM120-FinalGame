@@ -15,7 +15,7 @@ let config = {
     physics: {
       default: 'arcade',
       arcade: {
-        debug: false //debug put boxes over your objects w/ physics and velocity
+        debug: true //debug put boxes over your objects w/ physics and velocity
       }
     }
 }

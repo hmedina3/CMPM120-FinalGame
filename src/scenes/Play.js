@@ -89,10 +89,10 @@ class Play extends Phaser.Scene {
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0.0);
 
         // background music
-        if(this.bgMusicPlaying == false){
-        this.bgMusic = this.sound.add('sfx_music_2', { delay: 5, loop: true});
-        this.bgMusic.play(music);
-        this.bgMusicPlaying = true;
+        if(bgMusicPlaying == false){
+            this.bgMusic = this.sound.add('sfx_music_2', {loop: true});
+            this.bgMusic.play(music);
+            bgMusicPlaying = true;
         }
 
         // basic attack anims
@@ -336,15 +336,13 @@ class Play extends Phaser.Scene {
         }
         else if(this.gameOver == true){
              // stop music
-             if(this.bgMusicPlaying == true){
                  this.bgMusic.stop();
-             }
              // starts deathScene  
              this.scene.start("deathScene"); 
             }
         else if(this.gameWin == true){
-                this.scene.start("bossScene");
-                //this.scene.start('winScene');
+            this.bgMusic.stop();
+            this.scene.start("bossScene");
             }
         
 
@@ -468,7 +466,7 @@ class Play extends Phaser.Scene {
             this.wave = 4;
             console.log('wave:'+ this.wave);
             this.gameWin = true; 
-            this.scene.start("bossScene");   
+           // this.scene.start("bossScene");   
         }
         // last wave
         /*

@@ -8,7 +8,7 @@ class BasicAttack extends Phaser.GameObjects.Sprite{
         
         this.play('base');
         scene.physics.world.enableBody(this);
-        this.body.velocity.x = 250;
+        this.body.velocity.x = 300;
         scene.projectiles.add(this);
     }
 

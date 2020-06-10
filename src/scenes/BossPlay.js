@@ -218,15 +218,13 @@ class BossPlay extends Phaser.Scene {
     update(){
 
         if(this.gameOver == true){
-            // stop music
-            if(bgMusicPlaying == true){
                 this.bgMusic.stop();
-            }
             // starts deathScene  
             this.scene.start("deathScene"); 
            }
        else if(this.gameWin == true){
             this.bgMusic.stop();
+            // starts winScene
             this.scene.start("winScene");
            }
         // moves background

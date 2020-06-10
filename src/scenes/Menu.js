@@ -119,9 +119,7 @@ class Menu extends Phaser.Scene {
        this.enterButtonHoverState();
        this.scene.start("preloaderScene");
        this.scene.start("tutorialScene");
-      // this.scene.start("playScene");
-       //this.scene.start("winScene");
-      //this.scene.start("bossScene");
+    
    });
 
       // options button

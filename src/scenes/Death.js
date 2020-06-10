@@ -60,9 +60,6 @@ class Death extends Phaser.Scene {
      // fixed it so it won't move when the camera moves.
     this.bg_4.setScrollFactor(0);
 
-    
-  //  this.scene.add("playScene", playScene, true);
-
         // define keyboard keys
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
@@ -85,7 +82,7 @@ class Death extends Phaser.Scene {
          if(Phaser.Input.Keyboard.JustDown(keyR)){
             console.log("Loading playScene");
             this.bgMusic.stop();
-            this.scene.start("play2Scene");
+            this.scene.start("playScene");
             //this.scene.start("menuScene");
         }
     }

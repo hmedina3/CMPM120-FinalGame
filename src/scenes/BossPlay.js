@@ -185,29 +185,6 @@ class BossPlay extends Phaser.Scene {
         this.bossStage = true;
         this.wave = 4;
 
-        //spawn enemy4
-        for( let i = 0; i<1; i++){
-            let y = -250;
-            let x = 750;
-            switch(Phaser.Math.Between(0,1)){
-                case 0: y = Phaser.Math.Between(-50, -250);
-                        x = Phaser.Math.Between(700, 750);
-                    break;
-                case 1: y = Phaser.Math.Between(650, 850);
-                        x = Phaser.Math.Between(700, 750);
-                    break;
-            }
-            this.enemy4 = new Enemy(this, x, y,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
-            this.physics.add.existing(this.enemy4);
-            this.enemy4.anims.play('enemy4',true);
-            this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
-            //this.theEnemies.add(this.enemy4);
-            this.enemiesLeft += 1;
-            this.enemy4.bossStage = true;
-            console.log('x: '+ this.enemy4.x+ ' y: ' + this.enemy4.y);
-            console.log('enemies left:'+ this.enemiesLeft);
-        }
-
         this.gameOver = false;
         this.gameWin = false;
         
@@ -262,26 +239,6 @@ class BossPlay extends Phaser.Scene {
             }
         }
 
-        // collision detection between Player attack to enemy4
-        for(let k = 0; k < this.projectiles.getChildren().length; k++){
-
-            this.one = this.projectiles.getChildren()[k];
-            // if an enemy and a laser collide
-            if(this.physics.overlap(this.one,this.enemy4) == true){
-                // enemy health goes down
-                this.enemy4.health -= 10;
-                this.enemy4.setPercent(this.enemy4.health);
-                // laser gets destroy
-                this.one.destroy();
-                // if enemy runs out of health, they die
-                if(this.enemy4.health <= 0){
-                    this.enemy4.destroy();
-                    this.enemy4.bar.destroy();
-                    this.enemiesLeft -= 1;
-                    this.enemy4.isDead = true;
-                }
-            }
-        }
 
         // spacebar to fire
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
@@ -301,7 +258,6 @@ class BossPlay extends Phaser.Scene {
 
 
         this.boss.update();
-        this.enemy4.update();
 
         // collision detection between Player attack to Boss
         for(let k = 0; k < this.projectiles.getChildren().length; k++){
@@ -313,7 +269,7 @@ class BossPlay extends Phaser.Scene {
                 if(this.isScaled == true){
                     this.boss.health -= 1;
                 }else{
-                    this.boss.health -= 0.4;
+                    this.boss.health -= 0.3;
                 }
                 
                 this.boss.setPercent(this.boss.health);

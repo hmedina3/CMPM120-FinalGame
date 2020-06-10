@@ -80,6 +80,10 @@ class Menu extends Phaser.Scene {
     // title 
     this.add.text(centerX, centerY- textSpacer, "Project Ezekiel", menuConfig).setOrigin(0.5);
 
+    // define keys
+     keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+     
+    
     } // end of create function
 
 /********************************************************************************************************/
@@ -114,10 +118,10 @@ class Menu extends Phaser.Scene {
        this.bgMusic.stop();
        this.enterButtonHoverState();
        this.scene.start("preloaderScene");
-       //this.scene.start("playScene");
+       this.scene.start("playScene");
        //this.scene.start("winScene");
-       this.scene.start("tutorialScene");
-       //this.scene.start("bossScene");
+       //this.scene.start("tutorialScene");
+      //this.scene.start("bossScene");
    });
 
       // options button

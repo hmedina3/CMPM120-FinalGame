@@ -21,13 +21,7 @@ class Preloader extends Phaser.Scene {
     }
 
     complete() {
-
        loadingText.destroy(); 
-
-       if(globalNum == 1){
-        loadingText.destroy(); 
-       }
-
 	}
 
 } // end of Preloader class.

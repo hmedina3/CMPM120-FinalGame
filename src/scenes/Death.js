@@ -85,7 +85,7 @@ class Death extends Phaser.Scene {
          if(Phaser.Input.Keyboard.JustDown(keyR)){
             console.log("Loading playScene");
             this.bgMusic.stop();
-            this.scene.start("playScene");
+            this.scene.start("play2Scene");
             //this.scene.start("menuScene");
         }
     }

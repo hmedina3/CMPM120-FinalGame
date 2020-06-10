@@ -82,7 +82,7 @@ class Win extends Phaser.Scene {
             console.log("Loading playScene");
             this.bgMusic.stop();
             this.scene.start("preloaderScene");
-            this.scene.start("playScene");
+            this.scene.start("play2Scene");
         }
 
         if(Phaser.Input.Keyboard.JustDown(keyM)){

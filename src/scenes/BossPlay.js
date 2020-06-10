@@ -244,7 +244,7 @@ class BossPlay extends Phaser.Scene {
                 if(this.isScaled == true){
                     this.boss.health -= 1;
                 }else{
-                    this.boss.health -= 0.3;
+                    this.boss.health -= 0.4;
                 }
                 
                 this.boss.setPercent(this.boss.health);

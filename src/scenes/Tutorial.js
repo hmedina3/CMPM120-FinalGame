@@ -113,7 +113,7 @@ class Tutorial extends Phaser.Scene {
         this.up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP); 
         this.down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
         // 140-seconds 140000
-       game.settings.gameTimer = 30000;
+       game.settings.gameTimer = 140000;
       this.timer = this.formatTime(game.settings.gameTimer);
     }
 

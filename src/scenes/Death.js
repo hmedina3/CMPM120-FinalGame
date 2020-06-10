@@ -30,11 +30,10 @@ class Death extends Phaser.Scene {
         this.sound.play('message8');
 
         // background music
-        if(bgMusicPlaying == true){
             this.bgMusic = this.sound.add('sfx_music_4');
             this.bgMusic.play(music);
             bgMusicPlaying = false;
-        }
+        
 
         // background pictures
         this.add.sprite(400, 80, 'gameoverTitle');
@@ -84,16 +83,8 @@ class Death extends Phaser.Scene {
          this.bg_4.tilePositionX += 0.2; 
          // check for input during death scene
          if(Phaser.Input.Keyboard.JustDown(keyR)){
-             
             console.log("Loading playScene");
-            // creating scene dynamically
-            import(/* webpackChunkName: "playScene" */ './Play.js').then(playScene => {
-                this.scene.add('playScene', playScene.default, true)
-              });
-
             this.scene.start("playScene");
-           //this.scene.switch("deathScene","playScene");
-            //this.scene.start("menuScene");
         }
     }
 

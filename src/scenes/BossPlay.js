@@ -1,0 +1,286 @@
+class BossPlay extends Phaser.Scene {
+     
+    constructor() {
+        super("bossScene");
+
+    }
+
+    preload(){
+
+         /***SR-71 - main character***/
+         this.load.spritesheet('SR-71','./assets/player1.png',{frameWidth: 250, frameheight: 173, startFrame: 0, endFrame: 1}); //https://opengameart.org/content/one-more-lpc-alternate-character
+         // Sound effect obtained from https://www.zapsplat.com
+         // Basic attack
+         this.load.audio('attack', './assets/sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13.mp3');
+         // spritesheets
+        this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 39, frameheight: 39, startFrame: 0, endFrame: 20});
+        /****************************/
+
+        // background picture
+        this.load.image('background','./assets/Space-Background-4.jpg');
+        // background audio
+        // epic music -  Music: https://www.bensound.com
+        this.load.audio('sfx_music_x', './assets/bensound-epic.mp3');
+        // announcement
+        this.load.audio('message12', './assets/record0014_mixdown.wav');
+           
+
+         // health bars
+         this.load.image('health','./assets/healthbar.png');
+         this.load.image('box','./assets/healthbarbox.png');
+         this.load.image('boxhide','./assets/healthbarhide.png');
+         this.load.image('outline','./assets/healthbaroutline.png');
+         this.load.image('enemyHealth','./assets/enemyhealthbar.png');
+
+        /*** Main Boss ***/
+        //  Skorpio ( http://opengameart.org/users/skorpio )  new boss sprite? large-ship.png
+        this.load.spritesheet('boss','./assets/bossbig.png', {frameWidth: 885, frameheight: 749, startFrame: 0, endFrame: 2});
+        this.load.image('boss1','./assets/boss1big.png');
+        this.load.image('boss2','./assets/boss2big.png');
+        this.load.image('boss3','./assets/boss3big.png');
+        this.load.image('bossAttack','./assets/bosspower.png');
+        /***********************/
+
+
+        //asteroids
+       this.load.image('asteroid','./assets/asteroid.png');
+
+    }
+    create(){
+        //place background
+        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'background').setOrigin(0.0);
+        // background music
+        if(bgMusicPlaying == true){
+            this.bgMusic = this.sound.add('sfx_music_x', { delay: 5, loop: true});
+            this.bgMusic.play(music);
+            bgMusicPlaying = false;
+        }
+        // announcement
+        this.sound.play('message12');
+          // basic attack animation
+          this.anims.create({
+            key: 'base',
+            frames: this.anims.generateFrameNumbers('basicAttack',{start:0, end: 2, first: 0}),
+            framerate: 30,
+           repeat: -1,
+        });
+         //animation for player's ship
+         this.anims.create({
+            key:'player',
+            frames: this.anims.generateFrameNumbers('SR-71',{start:0,end:2,first:0}),
+            framerate:60,
+            repeat: -1,
+        });
+
+        // spawn asteroids
+        this.asteroidGroup = this.physics.add.group();
+        this.howMany = Phaser.Math.Between(5,10);
+        for(let a = 0; a < this.howMany; a++){
+
+            let random = Math.random();
+            if( random <= 0.85){
+                this.size = Phaser.Math.Between(5,30);
+            }else{
+                this.size = Phaser.Math.Between(30,50);
+            }
+            let x = 0;
+            let y = 0;
+            switch(Phaser.Math.Between(0,4)){
+                case 0: //center area
+                        y = Phaser.Math.Between(game.config.height/2 - (game.config.height/2)/2, (game.config.height/2) + (game.config.height/2)/2 );
+                        x = Phaser.Math.Between(game.config.width/2 - (game.config.width/2)/2, (game.config.width/2) + (game.config.width/2)/2 );
+                    break;
+                case 1: //bottom right corner
+                        y = Phaser.Math.Between(game.config.height/2 + game.config.height/4, game.config.height);
+                        x = Phaser.Math.Between(game.config.width/2 + game.config.width/4 , game.config.width);
+                    break;
+                case 2: //bottom left corner
+                        y = Phaser.Math.Between(game.config.height/2 + game.config.height/4, game.config.height);
+                        x = Phaser.Math.Between(0, (game.config.width/4));
+                    break;
+                case 3: //top right corner
+                        y = Phaser.Math.Between(0, (game.config.height/4));
+                        x = Phaser.Math.Between(game.config.width/2 + game.config.width/4, game.config.width);
+                    break;
+                case 4: //top left corner
+                        y = Phaser.Math.Between(0, (game.config.height/4));
+                        x = Phaser.Math.Between(0, (game.config.width/4));
+                    break;
+            }
+            
+            this.asteroid = this.add.image(x,y,'asteroid').setScale(this.size/5,this.size/5);
+            this.physics.add.existing(this.asteroid);
+            this.asteroid.body.setSize(32,32);
+            this.asteroidGroup.add(this.asteroid);
+            
+        }
+        // Creating main character and adding to location x y
+         this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
+         // adding physics to SR-71
+         this.physics.add.existing(this.player);
+         // sets physics body
+         this.player.body.setSize(250,173,0,0);
+         //player animation
+         this.player.anims.play('player',true);
+         // spacebar for shooting
+         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); 
+         // bounded to screen
+         this.player.setCollideWorldBounds(true);
+ 
+         
+         // define keyboard keys for movement
+         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+         
+
+         // create group to hold all our projectiles********
+            this.projectiles = this.add.group();
+        // Power-ups
+
+        /*
+        *
+        *
+        *
+        * 
+        * 
+        * 
+        * 
+        * 
+        */
+
+        // player's health bar
+        this.box = this.add.image(50,50,'box').setScale(0.5,0.15);
+        this.outline = this.add.image(200,58,'outline').setScale(0.3,0.25);
+        this.health = new HealthBar(this,52,50,2.9,0.6);
+        this.hide = this.add.image(7,50,'boxhide').setScale(0.2,0.25);
+        this.add.text(50, 50, 'HP',{color: 'black'}).setOrigin(0.5);
+        game.settings.gameHealth = 100;
+        this.health.setPercent(game.settings.gameHealth);
+
+        // Spawn Boss
+        this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
+        this.physics.add.existing(this.boss);
+        this.boss.body.setCircle(270,183,188); //(radius, x offset, y offset)
+        this.bossLaser = this.physics.add.group();
+        
+
+        this.gameOver = false;
+        this.gameWin = false;
+
+
+    } // end of create function
+
+    update(){
+
+        if(this.gameOver == true){
+            // stop music
+            this.bgMusic.stop();
+            // starts deathScene  
+            this.scene.start("deathScene"); 
+           }
+       else if(this.gameWin == true){
+            this.bgMusic.stop();
+            this.scene.start("winScene");
+           }
+        // moves background
+        this.background.tilePositionX += 0.4;
+
+           // display time ?
+           // power collsion
+
+        // spacebar to fire
+        if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
+        
+            if(this.isScaled == true){
+                this.scaledAttack();
+            }else{
+                this.basicAttack();
+            }
+        }
+
+        // update all attacks
+        for(let i = 0; i <this.projectiles.getChildren().length; i++){
+            var attack = this.projectiles.getChildren()[i];
+            attack.update();
+        }
+
+
+        this.boss.update();
+
+        // collision detection between Player attack to Boss
+        for(let k = 0; k < this.projectiles.getChildren().length; k++){
+
+            this.one = this.projectiles.getChildren()[k];
+            // if an enemy and a laser collide
+            if(this.physics.overlap(this.one,this.boss) == true){
+                // enemy health goes down
+                this.boss.health -= 0.3;
+                this.boss.setPercent(this.boss.health);
+                // laser gets destroy
+                this.one.destroy();
+                // if enemy runs out of health, they die
+                if(this.boss.health <= 0){
+                    this.boss.destroy();
+                    this.boss.bar.destroy();
+                    this.boss.laser.destroy();
+                    this.boss.laser2.destroy();
+                    this.boss.laser3.destroy();
+                    this.enemiesLeft -= 1;
+                    this.boss.isDead = true;
+                    this.gameWin = true;
+                }
+            }
+        } // end of for-loop.
+
+         // collision detection between Boss attack to Player
+         for(let l = 0; l < this.bossLaser.getChildren().length; l++){
+
+            this.power = this.bossLaser.getChildren()[l];
+            if(this.physics.overlap(this.player,this.power) == true){
+                game.settings.gameHealth -= 0.1;
+                this.health.setPercent(game.settings.gameHealth);
+            }
+                
+            // move to death scene if health bar is 0
+            if(game.settings.gameHealth <= 0){
+                this.gameOver = true;
+            }
+            
+        } // end of for-loop.
+
+        // updates players movements
+        this.player.update();
+            
+
+
+
+
+
+
+
+
+
+
+
+
+    } // end of update function
+
+
+    basicAttack(){
+        var attack = new BasicAttack(this);
+        this.sound.play('attack',{volume: 0.5});
+      }
+
+
+
+
+
+
+
+
+
+} // end of BossPlay scene

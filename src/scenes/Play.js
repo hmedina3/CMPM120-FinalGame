@@ -70,14 +70,6 @@ class Play extends Phaser.Scene {
         this.load.image('outline','./assets/healthbaroutline.png');
         this.load.image('enemyHealth','./assets/enemyhealthbar.png');
 
-        //boss sprite
-        //  Skorpio ( http://opengameart.org/users/skorpio )  new boss sprite? large-ship.png
-        this.load.spritesheet('boss','./assets/bossbig.png', {frameWidth: 885, frameheight: 749, startFrame: 0, endFrame: 2});
-        this.load.image('boss1','./assets/boss1big.png');
-        this.load.image('boss2','./assets/boss2big.png');
-        this.load.image('boss3','./assets/boss3big.png');
-        this.load.image('bossAttack','./assets/bosspower.png');
-
         //asteroids
         this.load.image('asteroid','./assets/asteroid.png');
     }
@@ -275,7 +267,7 @@ class Play extends Phaser.Scene {
             this.enemiesLeft += 1;
         }
         */
-        //spawn enemy3
+        // spawn enemy3
         for( let i = 0; i<this.amount+1; i++){
             let y = -50;
             let x = 700;
@@ -295,7 +287,7 @@ class Play extends Phaser.Scene {
             this.enemiesLeft += 1;
         }
 
-        //spawn enemy1
+        // spawn enemy1
         for( let i = 0; i<this.amount+2; i++){
             let y = -200;
             let x = 550;
@@ -317,25 +309,9 @@ class Play extends Phaser.Scene {
 
         console.log('enemies left = ' + this.enemiesLeft);
 
-        /*
-        //testig boss
-        this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
-        this.physics.add.existing(this.boss);
-        this.boss.body.setCircle(270,183,188);
-        */
-
-        /*
-        //putting all types of enemies into a group
-        this.theEnemies = this.physics.add.group();
-        this.theEnemies.add(this.enemy1);
-        this.theEnemies.add(this.enemy2);
-        this.theEnemies.add(this.enemy3);
-        this.theEnemies.add(this.enemy4);
-        */
-
         //putting all lasers into a group for enemy4's attacks
         this.enemy4Laser = this.physics.add.group();
-        this.bossLaser = this.physics.add.group();
+       // this.bossLaser = this.physics.add.group();7777777777777777777777777
         
         // Creating main character and adding to location x y
         this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
@@ -358,7 +334,6 @@ class Play extends Phaser.Scene {
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
         // create group to hold all our projectiles********
         this.projectiles = this.add.group();
@@ -396,14 +371,11 @@ class Play extends Phaser.Scene {
         else if(this.gameOver == true){
              // stop music
              this.bgMusic.stop();
-             // deletes playScene
-             this.scene.remove("playScene");
              // starts deathScene  
              this.scene.start("deathScene"); 
             }
         else if(this.gameWin == true){
-                //this.winScene();
-                this.scene.start("winScene");
+                this.scene.start("bossScene");
             }
         
 
@@ -429,7 +401,6 @@ class Play extends Phaser.Scene {
 
         // spacebar to fire
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
-            //console.log("Firing for effect!");
             if(this.isScaled == true){
                 this.scaledAttack();
             }else{
@@ -444,7 +415,7 @@ class Play extends Phaser.Scene {
         }
 
         
-        // collision detection for attacks to enemy***************************
+        // collision detection for Player attacks to Enemy***************************
         for(let k = 0; k < this.projectiles.getChildren().length; k++){
             
             this.one = this.projectiles.getChildren()[k];
@@ -452,17 +423,18 @@ class Play extends Phaser.Scene {
             for(let j = 0; j < this.theEnemies.getChildren().length; j++){
 
                 this.opponent = this.theEnemies.getChildren()[j];
-                //if an enemy and a bullet/laser collide
+                // if an enemy and a laser collide
                 if(this.physics.overlap(this.one,this.opponent) == true){
                     //enemy health goes down - 10
                     if(this.isScaled == true){
                         this.opponent.health -= 40;
                     }else{
                         this.opponent.health -= 10;
+                        this.one.destroy();
                     }
                     
                      // laser gets destroyed
-                     this.one.destroy();
+                     //this.one.destroy();
                     this.opponent.setPercent(this.opponent.health);
                     
                     //if enemy runs out of health, they die
@@ -477,8 +449,6 @@ class Play extends Phaser.Scene {
             }
         }
        
-
-        
         // checking for collision between enemy attack and player
         for(let k = 0; k < this.theEnemies.getChildren().length; k++){
             this.one = this.theEnemies.getChildren()[k];
@@ -520,21 +490,17 @@ class Play extends Phaser.Scene {
                 }
             }
         } // end of collison for-loop projectiles
-
-        //spawn boss
+        
+        // starts boss scene
+        if(this.enemiesLeft <= 0 && this.wave == 4){
+            this.gameWin = true;    
+        }
+        // last wave
         if(this.enemiesLeft <= 0 && this.wave == 3){
 
-            console.log('boss stage');
-
             this.enemiesLeft = 1;
-            this.bossStage = true;
             this.wave = 4;
             
-            this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
-            this.physics.add.existing(this.boss);
-            this.boss.body.setCircle(270,183,188); //(radius, x offset, y offset)
-            //this.boss.setTexture('boss3');
-
             //spawn enemy4
             for( let i = 0; i<1; i++){
                 let y = -250;
@@ -554,62 +520,6 @@ class Play extends Phaser.Scene {
                 this.theEnemies.add(this.enemy4);
                 this.enemiesLeft += 1;
             }
-        }
-
-        //entering boss stage
-        if(this.bossStage == true){
-
-            this.boss.update();
-            console.log('boss updates');
-
-            //collision detection between player attck to boss
-            for(let k = 0; k < this.projectiles.getChildren().length; k++){
-                this.one = this.projectiles.getChildren()[k];
-                //if an enemy and a bullet/laser collide
-                if(this.physics.overlap(this.one,this.boss) == true){
-                    //enemy health goes down
-                   this.boss.health -= 3;
-                    this.boss.setPercent(this.boss.health);
-                    //laser gets destroy
-                    this.one.destroy();
-                    //if enemy runs out of health, they die
-                    if(this.boss.health == 0){
-                        this.boss.destroy();
-                        this.boss.bar.destroy();
-                        this.boss.laser.destroy();
-                        this.boss.laser2.destroy();
-                        this.boss.laser3.destroy();
-                        this.enemiesLeft -= 1;
-                        this.boss.isDead = true;
-                        //this.gameWin = true;
-                    }
-                }
-                
-            }
-
-            //collision detection between boss attack to player
-            for(let l = 0; l < this.bossLaser.getChildren().length; l++){
-                this.power = this.bossLaser.getChildren()[l];
-                if(this.physics.overlap(this.player,this.power) == true){
-                    game.settings.gameHealth -= 1;
-                    this.health.setPercent(game.settings.gameHealth);
-                }
-                    
-                // move to death scene if health bar is 0
-                if(game.settings.gameHealth <= 0){
-                    this.gameOver = true;
-                }
-                
-            }
-
-            if(this.enemiesLeft == 0 ){
-                this.gameWin = true;
-            }
-
-            if(this.gameWin == true){
-                this.winScene();
-            }
-
         }
 
         //move to next wave when all enemies are destroyed
@@ -768,43 +678,6 @@ class Play extends Phaser.Scene {
       this.sound.play('scaleUpgradeSound',{volume: 0.5});
     }
     
-    // win scene
-    winScene(){
-
-        // when the player beats the boss level, go to win scene
-        if(this.gameWin == true){
-            //tracking shortest time
-            if(this.shortestTime == null || this.shortestTime == 0){
-                localStorage.setItem("high-score", 1000);
-                this.shortestTime = 1000;
-            }else if(this.timer < this.shortestTime){
-                localStorage.setItem("high-score", this.timer);
-            }
-
-            //prevent health bar from increasing
-            game.settings.gameHealth = this.stopHealth;
-            this.health.setPercent(game.settings.gameHealth);
-
-            this.bgMusic.stop();
-            this.add.text(game.config.width/2, game.config.height/6 + 50, 'Project Ezekiel was a sucess! Congratulations!',highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/4 + 50, 'Finishing Time: ' + Math.floor(localStorage.getItem("high-score")),highScoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 50, 'R to Restart or M for Menu', deathConfig).setOrigin(0.5);
-
-            // check for input during end scene
-            if(Phaser.Input.Keyboard.JustDown(keyR)){
-                this.scene.restart(this.p1Score);
-                this.bossStage = false;
-                this.gameWin = false;
-                game.settings.gameScore = 0;
-                this.bgMusic.stop();
-                this.scene.start('tutorialScene');
-            }
-            if(Phaser.Input.Keyboard.JustDown(keyM)){
-                this.scene.start('menuScene');
-                this.bgMusic.stop();
-            }
-        
-        }
-    }
+   
 
 } // end of play class

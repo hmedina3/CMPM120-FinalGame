@@ -141,42 +141,6 @@ class Play extends Phaser.Scene {
             repeat: -1,
         })
 
-      //  this.timer = this.formatTime(game.settings.gameTimer);
-      
-
-        //animation for boss
-        /*
-        this.anims.create({
-            key:'boss',
-            frames: this.anims.generateFrameNumbers('boss',{start:0,end:2,first:0}),
-            framerate:60,
-            repeat: -1,
-        })*/
-        
-        // different types of enemies
-        /*
-        // enemy1
-        this.enemy1 = new Enemy(this, 550, -200,'enemy', 0,8).setScale(1,1).setOrigin(0,0);
-        this.physics.add.existing(this.enemy1);
-        this.enemy1.anims.play('enemy1',true);
-        this.enemy1.body.setSize(98,70,0,0);// (x,y,[center])
-        //enemy2 (blue one)
-        this.enemy2 = new Enemy(this, 650, -100,'enemy2', 0,5).setScale(1,1).setOrigin(0,0);
-        this.physics.add.existing(this.enemy2);
-        this.enemy2.anims.play('enemy2',true);
-        this.enemy2.body.setSize(87,65,0,0);// (x,y,[center])
-        //enemy3 (red one)
-        this.enemy3 = new Enemy(this, 700, -50,'enemy3', 0,15).setScale(1,1).setOrigin(0,0);
-        this.physics.add.existing(this.enemy3);
-        this.enemy3.anims.play('enemy3',true);
-        this.enemy3.body.setSize(87,65,0,0);// (x,y,[center])
-        //enemy4 (small gray one)
-        this.enemy4 = new Enemy(this, 750, -250,'enemy4', 0,18).setScale(1,1).setOrigin(0,0);
-        this.physics.add.existing(this.enemy4);
-        this.enemy4.anims.play('enemy4',true);
-        this.enemy4.body.setSize(70,55,0,0);// (x,y,[center])
-        */
-
         // spawm asteroids
         this.asteroidGroup = this.physics.add.group();
         this.howMany = Phaser.Math.Between(5,10);
@@ -311,7 +275,6 @@ class Play extends Phaser.Scene {
 
         //putting all lasers into a group for enemy4's attacks
         this.enemy4Laser = this.physics.add.group();
-       // this.bossLaser = this.physics.add.group();7777777777777777777777777
         
         // Creating main character and adding to location x y
         this.player = new SR71(this, 100,300,'SR-71').setScale(.5,.5).setOrigin(0,0);
@@ -344,6 +307,7 @@ class Play extends Phaser.Scene {
         this.powerUpTimer = 10000;
         this.myTimer = this.formatTime(this.powerUpTimer);
         this.timedEvent = this.time.addEvent({ delay: 1000, callback: this.onEvent2, callbackScope: this, loop: true });
+       
 
         //player's health bar
         this.box = this.add.image(50,50,'box').setScale(0.5,0.15);
@@ -393,6 +357,10 @@ class Play extends Phaser.Scene {
                 this.scaleUpgrade.destroy();
               //  game.settings.shoe = true;
                 this.isScaled = true;
+                 // timer for current active powerup - 10 seconds
+                this.powerUpTimer2 = 10000;
+                this.myTimer2 = this.formatTime(this.powerUpTimer2);
+                this.timedEvent2 = this.time.addEvent({ delay: 1000, callback: this.onEvent, callbackScope: this, loop: true });
                 this.sound.play('scaleUpgrade!');
                 // start timer for next power up
                 this.powerUpGone = true;
@@ -427,14 +395,13 @@ class Play extends Phaser.Scene {
                 if(this.physics.overlap(this.one,this.opponent) == true){
                     //enemy health goes down - 10
                     if(this.isScaled == true){
-                        this.opponent.health -= 40;
+                        this.opponent.health -= 30;
                     }else{
                         this.opponent.health -= 10;
-                        this.one.destroy();
                     }
                     
                      // laser gets destroyed
-                     //this.one.destroy();
+                     this.one.destroy();
                     this.opponent.setPercent(this.opponent.health);
                     
                     //if enemy runs out of health, they die
@@ -449,7 +416,7 @@ class Play extends Phaser.Scene {
             }
         }
        
-        // checking for collision between enemy attack and player
+        // checking for collision for Enemy attacks to Player
         for(let k = 0; k < this.theEnemies.getChildren().length; k++){
             this.one = this.theEnemies.getChildren()[k];
             if( this.one.speed == 18){ 
@@ -522,7 +489,7 @@ class Play extends Phaser.Scene {
             }
         }
 
-        //move to next wave when all enemies are destroyed
+        // move to next wave when all enemies are destroyed
         if(this.enemiesLeft <= 0 && this.wave < 3){
 
             //spawn enemies
@@ -638,7 +605,19 @@ class Play extends Phaser.Scene {
      formatTime(milliseconds){
         return milliseconds / 1000;
     }
-    // scalepowerup spawn
+    // scale power-up spawn
+    onEvent(){
+        // upgrade is timed.
+        if(this.myTimer2 > 0){
+            this.myTimer2 -= 1;
+            console.log(this.myTimer2);
+        }
+        else{
+            this.isScaled = false;
+        }
+    
+    }
+    
      onEvent2(){
 
          if(this.myTimer > 0){
@@ -659,8 +638,8 @@ class Play extends Phaser.Scene {
             }
 
             if(this.powerUpGone == true){
-            // 20 seconds for next power up when grabbed 
-            this.powerUpTimer = 20000;
+            // 30 seconds for next power up when grabbed 
+            this.powerUpTimer = 30000;
             this.myTimer = this.formatTime(this.powerUpTimer);
             this.powerUpGone = false;
             }

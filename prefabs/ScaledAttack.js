@@ -10,12 +10,13 @@ class ScaledAttack extends Phaser.GameObjects.Sprite{
         //this.play('base');
         scene.physics.world.enableBody(this);
         this.body.velocity.x = 350;
+        this.body.setSize(10,154);
         scene.projectiles.add(this);
     }
 
     update(){
 
-        if(this.x < 100){
+        if(this.x < -800){
             this.destroy();
         }
     }

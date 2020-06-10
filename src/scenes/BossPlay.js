@@ -14,6 +14,15 @@ class BossPlay extends Phaser.Scene {
          this.load.audio('attack', './assets/sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13.mp3');
          // spritesheets
         this.load.spritesheet('basicAttack','./assets/spr_bullet_strip.png',{frameWidth: 39, frameheight: 39, startFrame: 0, endFrame: 20});
+         /***Slash Upgrade Assets***/
+        // announcement
+        this.load.audio('scaleUpgrade!', './assets/record009_mixdown.wav');
+        // Sound effect obtained from https://www.zapsplat.com
+        this.load.audio('scaleUpgradeSound','./assets/zapsplat_science_fiction_weapon_gun_shoot_003_32196.mp3');
+        // Mandatory: Credit "Matheus de Carvalho Oliveira" or "Matheus Carvalho"
+        this.load.image('scaleUpgrade','./assets/AirSlash.png');
+        // Power-up icon
+        this.load.image('scaleUpgradeIcon','./assets/power2.png');
         /****************************/
 
         // background picture
@@ -139,18 +148,18 @@ class BossPlay extends Phaser.Scene {
 
          // create group to hold all our projectiles********
             this.projectiles = this.add.group();
-        // Power-ups
+        
+        
+            // Power-ups
+         // create group to hold all our projectiles********
+         this.projectiles = this.add.group();
 
-        /*
-        *
-        *
-        *
-        * 
-        * 
-        * 
-        * 
-        * 
-        */
+         // Power-ups
+         this.powerUps = this.physics.add.group();
+         // Initial 10 second Power-Up
+         this.powerUpTimer = 10000;
+         this.myTimer = this.formatTime(this.powerUpTimer);
+         this.timedEvent = this.time.addEvent({ delay: 1000, callback: this.onEvent2, callbackScope: this, loop: true });
 
         // player's health bar
         this.box = this.add.image(50,50,'box').setScale(0.5,0.15);
@@ -164,7 +173,7 @@ class BossPlay extends Phaser.Scene {
         // Spawn Boss
         this.boss = new Boss(this, 700, 280,'boss1', 0).setScale(1.3,1.3);
         this.physics.add.existing(this.boss);
-        this.boss.body.setCircle(270,183,188); //(radius, x offset, y offset)
+        this.boss.body.setCircle(50,230,355); //(radius, x offset, y offset)
         this.bossLaser = this.physics.add.group();
         
 
@@ -189,8 +198,22 @@ class BossPlay extends Phaser.Scene {
         // moves background
         this.background.tilePositionX += 0.4;
 
-           // display time ?
-           // power collsion
+            // powerUps collision
+         for(let x = 0; x < this.powerUps.getChildren().length; x++){
+            this.scaleUpgrade = this.powerUps.getChildren()[x];
+            if(this.physics.overlap(this.player,this.scaleUpgrade) == true){
+                this.scaleUpgrade.destroy();
+              //  game.settings.shoe = true;
+                this.isScaled = true;
+                 // timer for current active powerup - 10 seconds
+                this.powerUpTimer2 = 10000;
+                this.myTimer2 = this.formatTime(this.powerUpTimer2);
+                this.timedEvent2 = this.time.addEvent({ delay: 1000, callback: this.onEvent, callbackScope: this, loop: true });
+                this.sound.play('scaleUpgrade!');
+                // start timer for next power up
+                this.powerUpGone = true;
+            }
+        }
 
         // spacebar to fire
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
@@ -218,7 +241,12 @@ class BossPlay extends Phaser.Scene {
             // if an enemy and a laser collide
             if(this.physics.overlap(this.one,this.boss) == true){
                 // enemy health goes down
-                this.boss.health -= 0.3;
+                if(this.isScaled == true){
+                    this.boss.health -= 1;
+                }else{
+                    this.boss.health -= 0.3;
+                }
+                
                 this.boss.setPercent(this.boss.health);
                 // laser gets destroy
                 this.one.destroy();
@@ -255,18 +283,6 @@ class BossPlay extends Phaser.Scene {
         // updates players movements
         this.player.update();
             
-
-
-
-
-
-
-
-
-
-
-
-
     } // end of update function
 
 
@@ -274,8 +290,55 @@ class BossPlay extends Phaser.Scene {
         var attack = new BasicAttack(this);
         this.sound.play('attack',{volume: 0.5});
       }
+      scaledAttack(){
+        var attack = new ScaledAttack(this);
+          this.sound.play('scaleUpgradeSound',{volume: 0.5});
+        }
+        
+       // More Time UI 
+     formatTime(milliseconds){
+        return milliseconds / 1000;
+    }
+      // scale power-up spawn
+    onEvent(){
+        // upgrade is timed.
+        if(this.myTimer2 > 0){
+            this.myTimer2 -= 1;
+            console.log(this.myTimer2);
+        }
+        else{
+            this.isScaled = false;
+        }
+    
+    }
+    
+     onEvent2(){
 
+         if(this.myTimer > 0){
+            this.myTimer -= 1;
+            console.log(this.myTimer);
+            this.myCounter = 1;
+         }
+         else{
+             
+            if(this.myCounter == 1){
+             this.scaleUpgrade = this.physics.add.sprite(300,300,'scaleUpgradeIcon').setScale(0.3,0.3);
+             this.powerUps.add(this.scaleUpgrade);         
+             this.scaleUpgrade.setRandomPosition(0,0, game.config.width, game.config.height);
+             this.scaleUpgrade.setVelocity(100,100);
+             this.scaleUpgrade.setCollideWorldBounds(true);
+             this.scaleUpgrade.setBounce(1);
+             this.myCounter = 0;
+            }
 
+            if(this.powerUpGone == true){
+            // 60 seconds for next power up when grabbed 
+            this.powerUpTimer = 60000;
+            this.myTimer = this.formatTime(this.powerUpTimer);
+            this.powerUpGone = false;
+            }
+         } 
+    }
 
 
 

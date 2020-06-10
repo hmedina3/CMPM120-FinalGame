@@ -15,28 +15,29 @@ class Play extends Phaser.Scene {
         
 
         // SR-71 upgrade assets
+        
         // Sound effect obtained from https://www.zapsplat.com
         this.load.audio('attack', './assets/sound_spark_Laser-Like_Synth_Laser_Sweep_Burst_13.mp3');
        
         /***Slash Upgrade Assets***/
-        this.load.audio('scaleUpgrade!', './assets/record006_mixdown.wav');
+        // announcement
+        this.load.audio('scaleUpgrade!', './assets/record009_mixdown.wav');
         // Sound effect obtained from https://www.zapsplat.com
-        this.load.audio('scaleUpgradeSound','assets\zapsplat_science_fiction_laser_hypnotic_zap_25803.mp3');
+        this.load.audio('scaleUpgradeSound','./assets/zapsplat_science_fiction_weapon_gun_shoot_003_32196.mp3');
         // Mandatory: Credit "Matheus de Carvalho Oliveira" or "Matheus Carvalho"
-        this.load.spritesheet('scaleUpgrade','./assets/AirSlash.png');
-        /*******************/
-
+        this.load.image('scaleUpgrade','./assets/AirSlash.png');
+        
         /***Beam Upgrade Assets***/
         // announcement
         this.load.audio('beamUpgrade!', './assets/record005_mixdown.wav');
          // Sound effect obtained from https://www.zapsplat.com
         this.load.audio('beamUpgradeSound', './assets/zapsplat_science_fiction_beam_lightly_rising_44803.mp3');
-        this.load.spritesheet('beamUpgrade','./assets/beamUpgrade.png');
-        /************************/
+        this.load.image('beamUpgrade','./assets/beamUpgrade.png'); 
+        //
 
          //icons for power-ups
-         this.load.spritesheet('scaleUpgradeIcon','./assets/power2.png');
-         this.load.spritesheet('beamUpgradeIcon','./assets/power1.png');
+         this.load.image('scaleUpgradeIcon','./assets/power2.png');
+         this.load.image('beamUpgradeIcon','./assets/power1.png');
 
         //enemy
         this.load.spritesheet('enemy','./assets/4_fighters_sprites.png',{frameWidth: 98, frameheight: 72, startFrame: 0, endFrame: 1}); //http://freegameassets.blogspot.com/2015/02/space-patrol-sprite-sheet-this-space.html
@@ -147,6 +148,9 @@ class Play extends Phaser.Scene {
             framerate:60,
             repeat: -1,
         })
+
+      //  this.timer = this.formatTime(game.settings.gameTimer);
+      
 
         //animation for boss
         /*
@@ -356,8 +360,15 @@ class Play extends Phaser.Scene {
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
-        // create group to hold all our projectiles
+        // create group to hold all our projectiles********
         this.projectiles = this.add.group();
+
+        // Power-ups
+        this.powerUps = this.physics.add.group();
+        // Initial 10 second Power-Up
+        this.powerUpTimer = 10000;
+        this.myTimer = this.formatTime(this.powerUpTimer);
+        this.timedEvent = this.time.addEvent({ delay: 1000, callback: this.onEvent2, callbackScope: this, loop: true });
 
         //player's health bar
         this.box = this.add.image(50,50,'box').setScale(0.5,0.15);
@@ -398,18 +409,34 @@ class Play extends Phaser.Scene {
 
         //display time
      this.showTime = this.add.text(490,33,'Time: ' + Math.floor(this.timer), scoreConfig);
-
-       this.shortestTime = localStorage.getItem("high-score");
+     this.shortestTime = localStorage.getItem("high-score");
  
-        
-        // moves background
+     // moves background
         this.background.tilePositionX += 0.4;
 
-        // spacebar test
+         // powerUps collision
+         for(let x = 0; x < this.powerUps.getChildren().length; x++){
+            this.scaleUpgrade = this.powerUps.getChildren()[x];
+            if(this.physics.overlap(this.player,this.scaleUpgrade) == true){
+                this.scaleUpgrade.destroy();
+              //  game.settings.shoe = true;
+                this.isScaled = true;
+                this.sound.play('scaleUpgrade!');
+                // start timer for next power up
+                this.powerUpGone = true;
+            }
+        }
+
+        // spacebar to fire
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
             //console.log("Firing for effect!");
-            this.basicAttack();
+            if(this.isScaled == true){
+                this.scaledAttack();
+            }else{
+                this.basicAttack();
+            }
         }
+
         // update all attacks
         for(let i = 0; i <this.projectiles.getChildren().length; i++){
             var attack = this.projectiles.getChildren()[i];
@@ -417,20 +444,29 @@ class Play extends Phaser.Scene {
         }
 
         
-        // collision detection for attacks to enemy
+        // collision detection for attacks to enemy***************************
         for(let k = 0; k < this.projectiles.getChildren().length; k++){
+            
             this.one = this.projectiles.getChildren()[k];
+
             for(let j = 0; j < this.theEnemies.getChildren().length; j++){
+
                 this.opponent = this.theEnemies.getChildren()[j];
                 //if an enemy and a bullet/laser collide
                 if(this.physics.overlap(this.one,this.opponent) == true){
                     //enemy health goes down - 10
-                    this.opponent.health -= 10;
+                    if(this.isScaled == true){
+                        this.opponent.health -= 40;
+                    }else{
+                        this.opponent.health -= 10;
+                    }
+                    
+                     // laser gets destroyed
+                     this.one.destroy();
                     this.opponent.setPercent(this.opponent.health);
-                    //bullet gets destroy
-                    this.one.destroy();
+                    
                     //if enemy runs out of health, they die
-                    if(this.opponent.health == 0){
+                    if(this.opponent.health <= 0){
                         this.opponent.destroy();
                         this.opponent.bar.destroy();
                         this.opponent.laser.destroy();
@@ -443,16 +479,17 @@ class Play extends Phaser.Scene {
        
 
         
-        //checking for collision between enemy attack and player
+        // checking for collision between enemy attack and player
         for(let k = 0; k < this.theEnemies.getChildren().length; k++){
             this.one = this.theEnemies.getChildren()[k];
-            if( this.one.speed == 18){ //for enemy 4's attacks
+            if( this.one.speed == 18){ 
+                //for enemy 4's attacks
                 for(let j = 0; j < this.enemy4Laser.getChildren().length; j++){
                     this.attack = this.enemy4Laser.getChildren()[j];
                     if(this.physics.overlap(this.player,this.attack) == true){
-                        //this.one.laser.destroy();
-                        this.attack.destroy();
-                        game.settings.gameHealth -= 2;
+                            this.one.laser.destroy();
+                            this.attack.destroy(); 
+                        game.settings.gameHealth -= 1;
                         this.health.setPercent(game.settings.gameHealth)
 
                         // move to death scene if health bar is 0////////////////////////////////////////////////////////////////////////////
@@ -467,7 +504,7 @@ class Play extends Phaser.Scene {
                     if(this.one.speed != 5){ 
                         // destroy all red lasers - 10
                         this.one.laser.destroy();
-                        game.settings.gameHealth -= 2;
+                        game.settings.gameHealth -= 1;
                         this.health.setPercent(game.settings.gameHealth)
 
                     }else{ //for yellow laser = 3
@@ -482,7 +519,7 @@ class Play extends Phaser.Scene {
                     }
                 }
             }
-        }
+        } // end of collison for-loop projectiles
 
         //spawn boss
         if(this.enemiesLeft <= 0 && this.wave == 3){
@@ -531,9 +568,9 @@ class Play extends Phaser.Scene {
                 //if an enemy and a bullet/laser collide
                 if(this.physics.overlap(this.one,this.boss) == true){
                     //enemy health goes down
-                    this.boss.health -= 3;
+                   this.boss.health -= 3;
                     this.boss.setPercent(this.boss.health);
-                    //bullet gets destroy
+                    //laser gets destroy
                     this.one.destroy();
                     //if enemy runs out of health, they die
                     if(this.boss.health == 0){
@@ -671,16 +708,11 @@ class Play extends Phaser.Scene {
             
         }
 
-  
-        //this.enemy1.update();
-        //this.enemy2.update();
-        //this.enemy3.update();
-        //this.enemy4.update();
+        // updates players movements
         this.player.update();
-        //this.boss.update();
-
-        //update enemies
-        for(let m =0; m<this.theEnemies.getChildren().length; m++){
+        
+        // update enemies
+        for(let m =0; m < this.theEnemies.getChildren().length; m++){
             this.update = this.theEnemies.getChildren()[m];
             this.update.update();
         }
@@ -689,11 +721,51 @@ class Play extends Phaser.Scene {
             this.stopHealth = game.settings.gameHealth;
         }
 
-    } // end of update function. 
+    } // end of update function.
+
+    
+     // More Time UI 
+     formatTime(milliseconds){
+        return milliseconds / 1000;
+    }
+    // scalepowerup spawn
+     onEvent2(){
+
+         if(this.myTimer > 0){
+            this.myTimer -= 1;
+            console.log(this.myTimer);
+            this.myCounter = 1;
+         }
+         else{
+             
+            if(this.myCounter == 1){
+             this.scaleUpgrade = this.physics.add.sprite(300,300,'scaleUpgradeIcon').setScale(0.3,0.3);
+             this.powerUps.add(this.scaleUpgrade);         
+             this.scaleUpgrade.setRandomPosition(0,0, game.config.width, game.config.height);
+             this.scaleUpgrade.setVelocity(100,100);
+             this.scaleUpgrade.setCollideWorldBounds(true);
+             this.scaleUpgrade.setBounce(1);
+             this.myCounter = 0;
+            }
+
+            if(this.powerUpGone == true){
+            // 20 seconds for next power up when grabbed 
+            this.powerUpTimer = 20000;
+            this.myTimer = this.formatTime(this.powerUpTimer);
+            this.powerUpGone = false;
+            }
+         } 
+    }
+
 
     basicAttack(){
       var attack = new BasicAttack(this);
       this.sound.play('attack',{volume: 0.5});
+    }
+
+    scaledAttack(){
+    var attack = new ScaledAttack(this);
+      this.sound.play('scaleUpgradeSound',{volume: 0.5});
     }
     
     // win scene

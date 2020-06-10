@@ -6,11 +6,9 @@ class Preloader extends Phaser.Scene {
     }
 
     preload(){
-        var width = this.cameras.main.width;
-            var height = this.cameras.main.height;
             var loadingText = this.make.text({
-                x: width / 2,
-                y: height / 2 - 50,
+                x: 380,
+                y: 250,
                 text: 'Loading...',
                 style: {
                     font: '28px Helvetica',

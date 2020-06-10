@@ -16,7 +16,7 @@ class HealthBar extends Phaser.GameObjects.Sprite{
         percent = percent/100;
         this.bar.setScale(this.width*percent,0.6);
         
-        if(percent == 0){
+        if(percent <= 0){
             this.dead == true
         }
     }

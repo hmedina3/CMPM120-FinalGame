@@ -153,7 +153,7 @@ class Tutorial extends Phaser.Scene {
 
         // spacebar test
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)){
-            console.log("Firing for effect!");
+            //console.log("Firing for effect!");
             this.basicAttack();
             if(this.counter < 7 ){
                 this.counter += 1; 
@@ -194,7 +194,7 @@ class Tutorial extends Phaser.Scene {
     onEvent(){
         if(this.timer > 0){
             this.timer -= 1;
-            console.log(this.timer);
+            //console.log(this.timer);
         }
         else{
             this.bgMusic.stop();

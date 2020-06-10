@@ -17,6 +17,7 @@ class Enemy extends Phaser.GameObjects.Sprite{
         this.shooting = false;
         this.even = 0;
         this.timing = 0;
+        this.bossStage = false;
         //this.laser = scene.add.tileSprite(0,0,200,150,'lasers');//([where on screen],[which area in image])
         
        //determining direction
@@ -172,7 +173,7 @@ class Enemy extends Phaser.GameObjects.Sprite{
 
             //control shooting rate
             this.even += 1;
-            if(this.scene.bossStage == true){
+            if(this.bossStage == true){
                 this.check = this.even%5;
             }else{
                 this.check = this.even%25;

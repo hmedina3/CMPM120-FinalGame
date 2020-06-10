@@ -357,8 +357,8 @@ class BossPlay extends Phaser.Scene {
             }
 
             if(this.powerUpGone == true){
-            // 60 seconds for next power up when grabbed 
-            this.powerUpTimer = 60000;
+            // 30 seconds for next power up when grabbed 
+            this.powerUpTimer = 30000;
             this.myTimer = this.formatTime(this.powerUpTimer);
             this.powerUpGone = false;
             }
